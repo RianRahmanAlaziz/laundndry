@@ -58,5 +58,37 @@ class UserController extends Controller
 
     function editprofil(Request $request)
     {
+       $this->validate($request, [
+            'username' => 'required|min:4',
+            'email' => 'required',
+        ]);
+
+        $user = User::find(Auth::user()->id);
+        if($request->password){
+            $user->update([
+                'username' => $request->username,
+                'email' => $request->email,
+                'password' => Hash::make($request->password)
+            ]);
+        } else {
+           
+            $user->update($request->only('username','email'));
+        }
+
+        //  if (!Auth::attempt($request->only('email', 'password'))) {
+        //     return response()->json([
+        //         'message' => 'Unauthorized'
+        //     ], 401);
+        // }
+
+        // $user = User::where('email', $request->email)->firstOrFail();
+
+        // $token = $user->createToken('auth_token')->plainTextToken;
+
+
+        return response()->json([
+            'data' => $user,
+            // 'token' => $token,
+        ], 201);
     }
 }

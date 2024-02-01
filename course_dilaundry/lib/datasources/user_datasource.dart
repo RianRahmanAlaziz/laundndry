@@ -5,6 +5,7 @@ import '../config/app_constants.dart';
 import '../config/app_request.dart';
 import '../config/app_response.dart';
 import '../config/failure.dart';
+import '../config/app_session.dart';
 
 class UserDatasource {
   static Future<Either<Failure, Map>> login(
@@ -62,11 +63,12 @@ class UserDatasource {
     String email,
     String password,
   ) async {
-    Uri url = Uri.parse('${AppConstants.baseURL}/register');
+    Uri url = Uri.parse('${AppConstants.baseURL}/user/edit');
+    final token = await AppSession.getBearerToken();
     try {
       final response = await http.post(
         url,
-        headers: AppRequest.header(),
+        headers: AppRequest.header(token),
         body: {
           'username': username,
           'email': email,
