@@ -1,7 +1,11 @@
+import 'package:course_dilaundry/models/shop_model.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class Orderpage extends StatefulWidget {
-  const Orderpage({Key? key}) : super(key: key);
+  final ShopModel shop;
+
+  const Orderpage({Key? key, required this.shop}) : super(key: key);
 
   @override
   // ignore: library_private_types_in_public_api
@@ -149,6 +153,7 @@ class _OrderpageState extends State<Orderpage> {
               onPressed: () {
                 Navigator.of(context).pop();
                 _resetOrder();
+                launchUrl(Uri.parse("https://wa.me/${widget.shop.whatsapp}"));
               },
               child: const Text('OK'),
             ),
@@ -211,8 +216,8 @@ class OrderItem {
   double get totalPrice => price * quantity;
 }
 
-void main() {
-  runApp(const MaterialApp(
-    home: Orderpage(),
-  ));
-}
+// void main() {
+//   runApp(const MaterialApp(
+//     home: Orderpage(wid),
+//   ));
+// }

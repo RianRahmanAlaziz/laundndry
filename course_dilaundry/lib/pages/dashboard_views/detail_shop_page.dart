@@ -57,7 +57,7 @@ class DetailShopPage extends StatelessWidget {
             margin: const EdgeInsets.symmetric(horizontal: 24),
             child: ElevatedButton(
               onPressed: () {
-                Nav.push(context, const Orderpage());
+                Nav.push(context, Orderpage(shop: shop));
               },
               child: const Text(
                 'Order',
