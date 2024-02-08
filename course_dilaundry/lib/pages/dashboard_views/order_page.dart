@@ -153,7 +153,32 @@ class _OrderpageState extends State<Orderpage> {
               onPressed: () {
                 Navigator.of(context).pop();
                 _resetOrder();
-                launchUrl(Uri.parse("https://wa.me/${widget.shop.whatsapp}"));
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: const Text('WhatsApp'),
+                      content: const Text(
+                          'Apakah anda ingin menghubungi toko lewat WhatsApp?'),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          child: const Text('TIDAK'),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                            launchUrl(Uri.parse(
+                                "https://wa.me/${widget.shop.whatsapp}"));
+                          },
+                          child: const Text('YA'),
+                        ),
+                      ],
+                    );
+                  },
+                );
               },
               child: const Text('OK'),
             ),

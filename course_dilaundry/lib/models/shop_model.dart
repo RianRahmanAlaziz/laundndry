@@ -7,6 +7,7 @@ class ShopModel {
     required this.city,
     required this.delivery,
     required this.pickup,
+    required this.categories,
     required this.whatsapp,
     required this.description,
     required this.price,
@@ -20,6 +21,7 @@ class ShopModel {
   String name;
   String location;
   String city;
+  List<String> categories;
   bool delivery;
   bool pickup;
   String whatsapp;
@@ -37,6 +39,7 @@ class ShopModel {
         city: json["city"],
         delivery: json["delivery"] == 1,
         pickup: json["pickup"] == 1,
+        categories: json['categories'].cast<String>(),
         whatsapp: json["whatsapp"],
         description: json["description"],
         price: json["price"]?.toDouble(),
@@ -55,6 +58,7 @@ class ShopModel {
         "pickup": pickup ? 1 : 0,
         "whatsapp": whatsapp,
         "description": description,
+        "categories": categories,
         "price": price,
         "rate": rate,
         "created_at": createdAt.toIso8601String(),

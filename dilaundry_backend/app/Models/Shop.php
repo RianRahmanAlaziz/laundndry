@@ -30,4 +30,10 @@ class Shop extends Model
         'price',
         'rate',
     ];
+    
+    public $appends = ['categories'];
+
+    public function getCategoriesAttribute(){
+        return explode(', ', $this->category);
+    }
 }

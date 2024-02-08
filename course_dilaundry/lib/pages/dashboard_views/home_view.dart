@@ -34,6 +34,42 @@ class _HomeViewState extends ConsumerState<HomeView> {
     Nav.push(context, SearchByCityPage(query: edtSearch.text));
   }
 
+  getShop() {
+    ShopDatasource.getAll().then((value) {
+      value.fold(
+        (failure) {
+          switch (failure.runtimeType) {
+            case ServerFailure:
+              setHomeShopStatus(ref, 'Server Error');
+              break;
+            case NotFoundFailure:
+              setHomeShopStatus(ref, 'Kode Salah');
+              break;
+            case ForbiddenFailure:
+              setHomeShopStatus(ref, 'You don\'t have access');
+              break;
+            case BadRequestFailure:
+              setHomeShopStatus(ref, 'Bad request');
+              break;
+            case UnauthorisedFailure:
+              setHomeShopStatus(ref, 'Unauthorised');
+              break;
+            default:
+              setHomeShopStatus(ref, 'Request Error');
+              break;
+          }
+        },
+        (result) {
+          setHomeShopStatus(ref, 'Success');
+          List data = result['data'];
+          List<ShopModel> shops =
+              data.map((e) => ShopModel.fromJson(e)).toList();
+          ref.read(homeShopCategoryListProvider.notifier).setData(shops);
+        },
+      );
+    });
+  }
+
   getPromo() {
     PromoDatasource.readLimit().then((value) {
       value.fold(
@@ -109,6 +145,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
   refresh() {
     getPromo();
     getRecommendation();
+    getShop();
   }
 
   @override
@@ -125,6 +162,241 @@ class _HomeViewState extends ConsumerState<HomeView> {
         children: [
           header(),
           categories(),
+          DView.height(20),
+          Expanded(
+              child: RefreshIndicator(
+                  onRefresh: () async => getShop(),
+                  child: Consumer(builder: (_, wiRef, __) {
+                    String statusList = wiRef.watch(homeShopStatusProvider);
+                    String statusCategory = wiRef.watch(homeCategoryProvider);
+                    List<ShopModel> listBackup =
+                        wiRef.watch(homeShopCategoryListProvider);
+
+                    if (statusList == '') return DView.loadingCircle();
+                    if (statusList != 'Success') {
+                      return Padding(
+                        padding: const EdgeInsets.fromLTRB(30, 0, 30, 80),
+                        child: ErrorBackground(
+                          ratio: 16 / 9,
+                          message: statusList,
+                        ),
+                      );
+                    }
+
+                    List<ShopModel> list = [];
+                    if (statusCategory == 'All') {
+                      list = List.from(listBackup);
+                    } else {
+                      list = listBackup
+                          .where((element) =>
+                              element.categories.contains(statusCategory))
+                          .toList();
+                    }
+
+                    return Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(30, 0, 30, 16),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              DView.textTitle(statusCategory,
+                                  color: Colors.black),
+                              DView.textAction(() {}, color: AppColors.primary),
+                            ],
+                          ),
+                        ),
+                        if (list.isEmpty)
+                          const Padding(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 30,
+                            ),
+                            child: ErrorBackground(
+                              ratio: 1.52,
+                              message: 'No Recommendation Yet',
+                            ),
+                          ),
+                        if (list.isNotEmpty)
+                          SizedBox(
+                            height: 250,
+                            child: ListView.builder(
+                              scrollDirection: Axis.horizontal,
+                              itemCount: list.length,
+                              itemBuilder: (context, index) {
+                                ShopModel item = list[index];
+                                return GestureDetector(
+                                  onTap: () {
+                                    Nav.push(
+                                        context, DetailShopPage(shop: item));
+                                  },
+                                  child: Container(
+                                    margin: EdgeInsets.fromLTRB(
+                                      index == 0 ? 30 : 10,
+                                      0,
+                                      index == list.length - 1 ? 30 : 10,
+                                      0,
+                                    ),
+                                    width: 200,
+                                    child: Stack(
+                                      fit: StackFit.expand,
+                                      children: [
+                                        ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                          child: FadeInImage(
+                                            placeholder: const AssetImage(
+                                                AppAssets.placeholderlaundry),
+                                            image: NetworkImage(
+                                              '${AppConstants.baseImageURL}/shop/${item.image}',
+                                            ),
+                                            fit: BoxFit.cover,
+                                            imageErrorBuilder:
+                                                (context, error, stackTrace) {
+                                              return const Icon(Icons.error);
+                                            },
+                                          ),
+                                        ),
+                                        Align(
+                                          alignment: Alignment.bottomCenter,
+                                          child: Container(
+                                            height: 150,
+                                            decoration: const BoxDecoration(
+                                              borderRadius: BorderRadius.only(
+                                                bottomLeft: Radius.circular(10),
+                                                bottomRight:
+                                                    Radius.circular(10),
+                                              ),
+                                              gradient: LinearGradient(
+                                                colors: [
+                                                  Colors.transparent,
+                                                  Colors.black,
+                                                ],
+                                                begin: Alignment.topCenter,
+                                                end: Alignment.bottomCenter,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        Positioned(
+                                          left: 8,
+                                          bottom: 8,
+                                          right: 8,
+                                          child: Column(
+                                            children: [
+                                              Row(
+                                                children:
+                                                    item.categories.map((e) {
+                                                  return Container(
+                                                    decoration: BoxDecoration(
+                                                      color: Colors.green
+                                                          .withOpacity(0.8),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              6),
+                                                    ),
+                                                    margin:
+                                                        const EdgeInsets.only(
+                                                            right: 4),
+                                                    padding: const EdgeInsets
+                                                        .symmetric(
+                                                      horizontal: 8,
+                                                      vertical: 4,
+                                                    ),
+                                                    child: Text(
+                                                      e,
+                                                      style: const TextStyle(
+                                                        height: 1,
+                                                        color: Colors.white,
+                                                      ),
+                                                    ),
+                                                  );
+                                                }).toList(),
+                                              ),
+                                              DView.height(8),
+                                              Container(
+                                                width: double.infinity,
+                                                decoration: BoxDecoration(
+                                                  color: Colors.white,
+                                                  borderRadius:
+                                                      BorderRadius.circular(8),
+                                                ),
+                                                padding:
+                                                    const EdgeInsets.all(8),
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(
+                                                      item.name,
+                                                      style: GoogleFonts.ptSans(
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        fontSize: 18,
+                                                      ),
+                                                    ),
+                                                    DView.height(4),
+                                                    Row(
+                                                      children: [
+                                                        RatingBar.builder(
+                                                          initialRating:
+                                                              item.rate,
+                                                          itemCount: 5,
+                                                          allowHalfRating: true,
+                                                          itemPadding:
+                                                              const EdgeInsets
+                                                                  .all(0),
+                                                          unratedColor:
+                                                              Colors.grey[300],
+                                                          itemBuilder: (context,
+                                                                  index) =>
+                                                              const Icon(
+                                                            Icons.star,
+                                                            color: Colors.amber,
+                                                          ),
+                                                          itemSize: 12,
+                                                          onRatingUpdate:
+                                                              (value) {},
+                                                          ignoreGestures: true,
+                                                        ),
+                                                        DView.width(4),
+                                                        Text(
+                                                          '(${item.rate})',
+                                                          style:
+                                                              const TextStyle(
+                                                            color:
+                                                                Colors.black87,
+                                                            fontSize: 11,
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    DView.height(4),
+                                                    Text(
+                                                      item.location,
+                                                      maxLines: 1,
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                      style: const TextStyle(
+                                                        fontSize: 12,
+                                                        color: Colors.grey,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                      ],
+                    );
+                  }))),
           DView.height(20),
           promo(),
           DView.height(20),
@@ -408,7 +680,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
                               child: Column(
                                 children: [
                                   Row(
-                                    children: ['Reguler', 'Express'].map((e) {
+                                    children: item.categories.map((e) {
                                       return Container(
                                         decoration: BoxDecoration(
                                           color: Colors.green.withOpacity(0.8),
