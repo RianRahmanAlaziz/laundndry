@@ -1,5 +1,11 @@
+import 'package:course_dilaundry/config/nav.dart';
 import 'package:course_dilaundry/models/shop_model.dart';
+import 'package:course_dilaundry/pages/dashboard_page.dart';
+import 'package:course_dilaundry/pages/dashboard_views/my_laundry_view.dart';
+import 'package:course_dilaundry/providers/dashboard_provider.dart';
+import 'package:course_dilaundry/providers/my_laundry_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class Orderpage extends StatefulWidget {
@@ -152,7 +158,6 @@ class _OrderpageState extends State<Orderpage> {
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
-                _resetOrder();
                 showDialog(
                   context: context,
                   builder: (BuildContext context) {
@@ -161,14 +166,25 @@ class _OrderpageState extends State<Orderpage> {
                       content: const Text(
                           'Apakah anda ingin menghubungi toko lewat WhatsApp?'),
                       actions: [
+                        Consumer(builder: (_, wiRef, __) {
+                          return TextButton(
+                            onPressed: () {
+                              _resetOrder();
+                              // int navIndex =
+                              //     wiRef.watch(dashboardNavIndexProvider);
+
+                              wiRef
+                                  .read(dashboardNavIndexProvider.notifier)
+                                  .state = 1;
+
+                              Nav.replace(context, const DashboardPage());
+                            },
+                            child: const Text('TIDAK'),
+                          );
+                        }),
                         TextButton(
                           onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                          child: const Text('TIDAK'),
-                        ),
-                        TextButton(
-                          onPressed: () {
+                            _resetOrder();
                             Navigator.of(context).pop();
                             launchUrl(Uri.parse(
                                 "https://wa.me/${widget.shop.whatsapp}"));
