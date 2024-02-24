@@ -335,41 +335,41 @@ class _HomeViewState extends ConsumerState<HomeView> {
                                                       ),
                                                     ),
                                                     DView.height(4),
-                                                    Row(
-                                                      children: [
-                                                        RatingBar.builder(
-                                                          initialRating:
-                                                              item.rate,
-                                                          itemCount: 5,
-                                                          allowHalfRating: true,
-                                                          itemPadding:
-                                                              const EdgeInsets
-                                                                  .all(0),
-                                                          unratedColor:
-                                                              Colors.grey[300],
-                                                          itemBuilder: (context,
-                                                                  index) =>
-                                                              const Icon(
-                                                            Icons.star,
-                                                            color: Colors.amber,
-                                                          ),
-                                                          itemSize: 12,
-                                                          onRatingUpdate:
-                                                              (value) {},
-                                                          ignoreGestures: true,
-                                                        ),
-                                                        DView.width(4),
-                                                        Text(
-                                                          '(${item.rate})',
-                                                          style:
-                                                              const TextStyle(
-                                                            color:
-                                                                Colors.black87,
-                                                            fontSize: 11,
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
+                                                    // Row(
+                                                    //   children: [
+                                                    //     RatingBar.builder(
+                                                    //       initialRating:
+                                                    //           item.rate,
+                                                    //       itemCount: 5,
+                                                    //       allowHalfRating: true,
+                                                    //       itemPadding:
+                                                    //           const EdgeInsets
+                                                    //               .all(0),
+                                                    //       unratedColor:
+                                                    //           Colors.grey[300],
+                                                    //       itemBuilder: (context,
+                                                    //               index) =>
+                                                    //           const Icon(
+                                                    //         Icons.star,
+                                                    //         color: Colors.amber,
+                                                    //       ),
+                                                    //       itemSize: 12,
+                                                    //       onRatingUpdate:
+                                                    //           (value) {},
+                                                    //       ignoreGestures: true,
+                                                    //     ),
+                                                    //     DView.width(4),
+                                                    //     Text(
+                                                    //       '(${item.rate})',
+                                                    //       style:
+                                                    //           const TextStyle(
+                                                    //         color:
+                                                    //             Colors.black87,
+                                                    //         fontSize: 11,
+                                                    //       ),
+                                                    //     ),
+                                                    //   ],
+                                                    // ),
                                                     DView.height(4),
                                                     Text(
                                                       item.location,
@@ -722,35 +722,35 @@ class _HomeViewState extends ConsumerState<HomeView> {
                                           ),
                                         ),
                                         DView.height(4),
-                                        Row(
-                                          children: [
-                                            RatingBar.builder(
-                                              initialRating: item.rate,
-                                              itemCount: 5,
-                                              allowHalfRating: true,
-                                              itemPadding:
-                                                  const EdgeInsets.all(0),
-                                              unratedColor: Colors.grey[300],
-                                              itemBuilder: (context, index) =>
-                                                  const Icon(
-                                                Icons.star,
-                                                color: Colors.amber,
-                                              ),
-                                              itemSize: 12,
-                                              onRatingUpdate: (value) {},
-                                              ignoreGestures: true,
-                                            ),
-                                            DView.width(4),
-                                            Text(
-                                              '(${item.rate})',
-                                              style: const TextStyle(
-                                                color: Colors.black87,
-                                                fontSize: 11,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        DView.height(4),
+                                        // Row(
+                                        //   children: [
+                                        //     RatingBar.builder(
+                                        //       initialRating: item.rate,
+                                        //       itemCount: 5,
+                                        //       allowHalfRating: true,
+                                        //       itemPadding:
+                                        //           const EdgeInsets.all(0),
+                                        //       unratedColor: Colors.grey[300],
+                                        //       itemBuilder: (context, index) =>
+                                        //           const Icon(
+                                        //         Icons.star,
+                                        //         color: Colors.amber,
+                                        //       ),
+                                        //       itemSize: 12,
+                                        //       onRatingUpdate: (value) {},
+                                        //       ignoreGestures: true,
+                                        //     ),
+                                        //     DView.width(4),
+                                        //     Text(
+                                        //       '(${item.rate})',
+                                        //       style: const TextStyle(
+                                        //         color: Colors.black87,
+                                        //         fontSize: 11,
+                                        //       ),
+                                        //     ),
+                                        //   ],
+                                        // ),
+                                        // DView.height(4),
                                         Text(
                                           item.location,
                                           maxLines: 1,

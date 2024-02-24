@@ -10,7 +10,9 @@ class ShopModel {
     required this.categories,
     required this.whatsapp,
     required this.description,
-    required this.price,
+    required this.price_cuci_komplit,
+    this.price_dry_clean,
+    this.price_cuci_satuan,
     required this.rate,
     required this.createdAt,
     required this.updatedAt,
@@ -26,7 +28,9 @@ class ShopModel {
   bool pickup;
   String whatsapp;
   String description;
-  double price;
+  double price_cuci_komplit;
+  double? price_dry_clean;
+  double? price_cuci_satuan;
   double rate;
   DateTime createdAt;
   DateTime updatedAt;
@@ -42,7 +46,9 @@ class ShopModel {
         categories: json['categories'].cast<String>(),
         whatsapp: json["whatsapp"],
         description: json["description"],
-        price: json["price"]?.toDouble(),
+        price_cuci_komplit: json["price_cuci_komplit"]?.toDouble(),
+        price_dry_clean: json["price_dry_clean"]?.toDouble(),
+        price_cuci_satuan: json["price_cuci_satuan"]?.toDouble(),
         rate: json["rate"]?.toDouble(),
         createdAt: DateTime.parse(json["created_at"]).toLocal(),
         updatedAt: DateTime.parse(json["updated_at"]).toLocal(),
@@ -59,7 +65,9 @@ class ShopModel {
         "whatsapp": whatsapp,
         "description": description,
         "categories": categories,
-        "price": price,
+        "price_cuci_komplit": price_cuci_komplit,
+        "price_dry_clean": price_dry_clean,
+        "price_cuci_satuan": price_cuci_satuan,
         "rate": rate,
         "created_at": createdAt.toIso8601String(),
         "updated_at": updatedAt.toIso8601String(),

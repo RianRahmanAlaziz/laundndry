@@ -24,16 +24,19 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/promo', [PromoController::class, 'readAll']);
 Route::get('/shop', [ShopController::class, 'readAll']);
-Route::get('/laundry', [LaundryController::class, 'readAll']);
+// Route::get('/laundry', [LaundryController::class, 'readAll']);
 Route::get('/user', [UserController::class, 'readAll']);
 
 Route::post('/register', [UserController::class, 'register']);
 Route::post('/login', [UserController::class, 'login']);
 
 Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/laundry', [LaundryController::class, 'readAll']);
+    Route::post('/laundry', [LaundryController::class, 'create']);
     // Laundry
     Route::get('/laundry/user/{id}', [LaundryController::class, 'whereUserId']);
     Route::post('/laundry/claim', [LaundryController::class, 'claim']);
+    Route::get('/laundry/{id}/{status}', [LaundryController::class, 'updateStatus']);
     
     // Promo
     Route::get('/promo/limit', [PromoController::class, 'readLimit']);

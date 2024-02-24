@@ -29,39 +29,75 @@ class _MyLaundryViewState extends ConsumerState<MyLaundryView> {
   late UserModel user;
 
   getMyLaundry() {
-    LaundryDatasource.readByUser(user.id).then((value) {
-      value.fold(
-        (failure) {
-          switch (failure.runtimeType) {
-            case ServerFailure:
-              setMyLaundryStatus(ref, 'Server Error');
-              break;
-            case NotFoundFailure:
-              setMyLaundryStatus(ref, 'Kode Salah');
-              break;
-            case ForbiddenFailure:
-              setMyLaundryStatus(ref, 'You don\'t have access');
-              break;
-            case BadRequestFailure:
-              setMyLaundryStatus(ref, 'Bad request');
-              break;
-            case UnauthorisedFailure:
-              setMyLaundryStatus(ref, 'Unauthorised');
-              break;
-            default:
-              setMyLaundryStatus(ref, 'Request Error');
-              break;
-          }
-        },
-        (result) {
-          setMyLaundryStatus(ref, 'Success');
-          List data = result['data'];
-          List<LaundryModel> laundries =
-              data.map((e) => LaundryModel.fromJson(e)).toList();
-          ref.read(myLaundryListProvider.notifier).setData(laundries);
-        },
-      );
-    });
+    if (user.role == 'Admin') {
+      LaundryDatasource.readAll().then((value) {
+        value.fold(
+          (failure) {
+            switch (failure.runtimeType) {
+              case ServerFailure:
+                setMyLaundryStatus(ref, 'Server Error');
+                break;
+              case NotFoundFailure:
+                setMyLaundryStatus(ref, 'Kode Salah');
+                break;
+              case ForbiddenFailure:
+                setMyLaundryStatus(ref, 'You don\'t have access');
+                break;
+              case BadRequestFailure:
+                setMyLaundryStatus(ref, 'Bad request');
+                break;
+              case UnauthorisedFailure:
+                setMyLaundryStatus(ref, 'Unauthorised');
+                break;
+              default:
+                setMyLaundryStatus(ref, 'Request Error');
+                break;
+            }
+          },
+          (result) {
+            setMyLaundryStatus(ref, 'Success');
+            List data = result['data'];
+            List<LaundryModel> laundries =
+                data.map((e) => LaundryModel.fromJson(e)).toList();
+            ref.read(myLaundryListProvider.notifier).setData(laundries);
+          },
+        );
+      });
+    } else {
+      LaundryDatasource.readByUser(user.id).then((value) {
+        value.fold(
+          (failure) {
+            switch (failure.runtimeType) {
+              case ServerFailure:
+                setMyLaundryStatus(ref, 'Server Error');
+                break;
+              case NotFoundFailure:
+                setMyLaundryStatus(ref, 'Kode Salah');
+                break;
+              case ForbiddenFailure:
+                setMyLaundryStatus(ref, 'You don\'t have access');
+                break;
+              case BadRequestFailure:
+                setMyLaundryStatus(ref, 'Bad request');
+                break;
+              case UnauthorisedFailure:
+                setMyLaundryStatus(ref, 'Unauthorised');
+                break;
+              default:
+                setMyLaundryStatus(ref, 'Request Error');
+                break;
+            }
+          },
+          (result) {
+            setMyLaundryStatus(ref, 'Success');
+            List data = result['data'];
+            List<LaundryModel> laundries =
+                data.map((e) => LaundryModel.fromJson(e)).toList();
+            ref.read(myLaundryListProvider.notifier).setData(laundries);
+          },
+        );
+      });
+    }
   }
 
   dialogClaim() {
@@ -225,10 +261,10 @@ class _MyLaundryViewState extends ConsumerState<MyLaundryView> {
                 return GroupedListView<LaundryModel, String>(
                   padding: const EdgeInsets.fromLTRB(30, 0, 30, 80),
                   elements: list,
-                  groupBy: (element) => AppFormat.justDate(element.createdAt),
+                  groupBy: (element) => AppFormat.justDate(element.createdAt!),
                   order: GroupedListOrder.DESC,
                   itemComparator: (element1, element2) {
-                    return element1.createdAt.compareTo(element2.createdAt);
+                    return element1.createdAt!.compareTo(element2.createdAt!);
                   },
                   groupSeparatorBuilder: (value) => Align(
                     alignment: Alignment.topLeft,
@@ -287,6 +323,22 @@ class _MyLaundryViewState extends ConsumerState<MyLaundryView> {
                                     fontSize: 18,
                                   ),
                                 ),
+                              ],
+                            ),
+                            DView.height(12),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    laundry.user!.username,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ),
+                                DView.width(),
                               ],
                             ),
                             DView.height(12),

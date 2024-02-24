@@ -1,15 +1,116 @@
 import 'package:course_dilaundry/config/app_assets.dart';
 import 'package:course_dilaundry/config/app_colors.dart';
+import 'package:course_dilaundry/config/app_constants.dart';
 import 'package:course_dilaundry/config/app_format.dart';
+import 'package:course_dilaundry/config/app_session.dart';
+import 'package:course_dilaundry/config/failure.dart';
 import 'package:course_dilaundry/config/nav.dart';
+import 'package:course_dilaundry/datasources/laundry_datasource.dart';
 import 'package:course_dilaundry/models/laundry_model.dart';
+import 'package:course_dilaundry/models/user_model.dart';
 import 'package:course_dilaundry/pages/dashboard_views/detail_shop_page.dart';
+import 'package:course_dilaundry/providers/my_laundry_provider.dart';
 import 'package:d_view/d_view.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class DetailLaundryPage extends StatelessWidget {
-  const DetailLaundryPage({super.key, required this.laundry});
+class DetailLaundryPage extends ConsumerStatefulWidget {
   final LaundryModel laundry;
+
+  const DetailLaundryPage({super.key, required this.laundry});
+
+  @override
+  // ignore: library_private_types_in_public_api
+  ConsumerState<DetailLaundryPage> createState() => _DetailLaundryPageState();
+}
+
+class _DetailLaundryPageState extends ConsumerState<DetailLaundryPage> {
+  late UserModel user;
+  late String role = '';
+
+  getMyLaundry() {
+    if (user.role == 'Admin') {
+      LaundryDatasource.readAll().then((value) {
+        value.fold(
+          (failure) {
+            switch (failure.runtimeType) {
+              case ServerFailure:
+                setMyLaundryStatus(ref, 'Server Error');
+                break;
+              case NotFoundFailure:
+                setMyLaundryStatus(ref, 'Kode Salah');
+                break;
+              case ForbiddenFailure:
+                setMyLaundryStatus(ref, 'You don\'t have access');
+                break;
+              case BadRequestFailure:
+                setMyLaundryStatus(ref, 'Bad request');
+                break;
+              case UnauthorisedFailure:
+                setMyLaundryStatus(ref, 'Unauthorised');
+                break;
+              default:
+                setMyLaundryStatus(ref, 'Request Error');
+                break;
+            }
+          },
+          (result) {
+            setMyLaundryStatus(ref, 'Success');
+            List data = result['data'];
+            List<LaundryModel> laundries =
+                data.map((e) => LaundryModel.fromJson(e)).toList();
+            ref.read(myLaundryListProvider.notifier).setData(laundries);
+          },
+        );
+      });
+    } else {
+      LaundryDatasource.readByUser(user.id).then((value) {
+        value.fold(
+          (failure) {
+            switch (failure.runtimeType) {
+              case ServerFailure:
+                setMyLaundryStatus(ref, 'Server Error');
+                break;
+              case NotFoundFailure:
+                setMyLaundryStatus(ref, 'Kode Salah');
+                break;
+              case ForbiddenFailure:
+                setMyLaundryStatus(ref, 'You don\'t have access');
+                break;
+              case BadRequestFailure:
+                setMyLaundryStatus(ref, 'Bad request');
+                break;
+              case UnauthorisedFailure:
+                setMyLaundryStatus(ref, 'Unauthorised');
+                break;
+              default:
+                setMyLaundryStatus(ref, 'Request Error');
+                break;
+            }
+          },
+          (result) {
+            setMyLaundryStatus(ref, 'Success');
+            List data = result['data'];
+            List<LaundryModel> laundries =
+                data.map((e) => LaundryModel.fromJson(e)).toList();
+            ref.read(myLaundryListProvider.notifier).setData(laundries);
+          },
+        );
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    role = "";
+    AppSession.getUser().then((value) {
+      setState(() {
+        user = value!;
+        role = value.role;
+      });
+    });
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,27 +131,30 @@ class DetailLaundryPage extends StatelessWidget {
             ),
           ),
           DView.height(),
-          itemInfo(Icons.sell, AppFormat.longPrice(laundry.total)),
+          itemInfo(Icons.sell, AppFormat.longPrice(widget.laundry.total)),
           divider(),
-          itemInfo(Icons.event, AppFormat.fullDate(laundry.createdAt)),
+          itemInfo(Icons.event, AppFormat.fullDate(widget.laundry.createdAt)),
           divider(),
           InkWell(
             onTap: () {
-              Nav.push(context, DetailShopPage(shop: laundry.shop));
+              Nav.push(context, DetailShopPage(shop: widget.laundry.shop));
             },
-            child: itemInfo(Icons.store, laundry.shop.name),
+            child: itemInfo(Icons.store, widget.laundry.shop.name),
           ),
           divider(),
-          itemInfo(Icons.shopping_basket, '${laundry.weight} kg'),
+          itemInfo(Icons.shopping_basket, '${widget.laundry.weight} kg'),
           divider(),
-          if (laundry.withPickup) itemInfo(Icons.shopping_bag, 'Pickup'),
-          if (laundry.withPickup) itemDescription(laundry.pickupAddress),
-          if (laundry.withPickup) divider(),
-          if (laundry.withDelivery) itemInfo(Icons.local_shipping, 'Delivery'),
-          if (laundry.withDelivery) itemDescription(laundry.deliveryAddress),
-          if (laundry.withDelivery) divider(),
+          if (widget.laundry.withPickup) itemInfo(Icons.shopping_bag, 'Pickup'),
+          if (widget.laundry.withPickup)
+            itemDescription(widget.laundry.pickupAddress),
+          if (widget.laundry.withPickup) divider(),
+          if (widget.laundry.withDelivery)
+            itemInfo(Icons.local_shipping, 'Delivery'),
+          if (widget.laundry.withDelivery)
+            itemDescription(widget.laundry.deliveryAddress),
+          if (widget.laundry.withDelivery) divider(),
           itemInfo(Icons.description, 'Description'),
-          itemDescription(laundry.description),
+          itemDescription(widget.laundry.description ?? ''),
           divider(),
         ],
       ),
@@ -81,7 +185,7 @@ class DetailLaundryPage extends StatelessWidget {
     );
   }
 
-  Widget itemDescription(String text) {
+  Widget itemDescription(String? text) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 30),
       child: Row(
@@ -93,7 +197,7 @@ class DetailLaundryPage extends StatelessWidget {
           DView.width(10),
           Expanded(
             child: Text(
-              text,
+              text ?? '',
               style: const TextStyle(color: Colors.black54),
             ),
           ),
@@ -136,24 +240,72 @@ class DetailLaundryPage extends StatelessWidget {
               Align(
                 alignment: Alignment.center,
                 child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 60,
-                    vertical: 30,
-                  ),
-                  child: Text(
-                    laundry.status,
-                    style: const TextStyle(
-                      color: Colors.black87,
-                      fontSize: 40,
-                      height: 1,
-                      fontWeight: FontWeight.bold,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
                     ),
-                  ),
-                ),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 60,
+                      vertical: 30,
+                    ),
+                    child: role != 'Admin'
+                        ? Text(
+                            widget.laundry.status,
+                            style: const TextStyle(
+                              color: Colors.black87,
+                              fontSize: 40,
+                              height: 1,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          )
+                        : DropdownMenu<String>(
+                            initialSelection: widget.laundry.status,
+                            onSelected: (String? value) {
+                              LaundryDatasource.updateStatus(
+                                      widget.laundry.id!, value!)
+                                  .then((value) => {
+                                        showDialog(
+                                          context: context,
+                                          builder: (context) {
+                                            return SimpleDialog(
+                                              titlePadding:
+                                                  const EdgeInsets.all(16),
+                                              contentPadding:
+                                                  const EdgeInsets.fromLTRB(
+                                                      16, 0, 16, 16),
+                                              title: const Text('Weight'),
+                                              children: [
+                                                const Text(
+                                                    "Laundry status successfully updated"),
+                                                DView.height(20),
+                                                ElevatedButton(
+                                                  onPressed: () {
+                                                    Navigator.pop(context);
+                                                    getMyLaundry();
+                                                  },
+                                                  child: const Text(
+                                                    'Ok',
+                                                    style: TextStyle(
+                                                        color: Colors.black87,
+                                                        fontWeight:
+                                                            FontWeight.bold),
+                                                  ),
+                                                ),
+                                              ],
+                                            );
+                                          },
+                                        )
+                                      });
+                            },
+                            dropdownMenuEntries: AppConstants
+                                .laundryStatusCategory
+                                .where((element) => element != 'All')
+                                .map<DropdownMenuEntry<String>>((String value) {
+                              return DropdownMenuEntry<String>(
+                                  value: value, label: value);
+                            }).toList())
+                    // child: Dropd,
+                    ),
               ),
               Positioned(
                 top: 36,
@@ -162,25 +314,25 @@ class DetailLaundryPage extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Row(
-                      children: [
-                        Text(
-                          'ID: ${laundry.id}',
-                          style: const TextStyle(
-                            fontSize: 18,
-                            color: Colors.white,
-                            height: 1,
-                            fontWeight: FontWeight.bold,
-                            shadows: [
-                              Shadow(
-                                blurRadius: 6,
-                                color: Colors.black87,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
+                    // Row(
+                    //   children: [
+                    //     Text(
+                    //       'ID: ${laundry.id}',
+                    //       style: const TextStyle(
+                    //         fontSize: 18,
+                    //         color: Colors.white,
+                    //         height: 1,
+                    //         fontWeight: FontWeight.bold,
+                    //         shadows: [
+                    //           Shadow(
+                    //             blurRadius: 6,
+                    //             color: Colors.black87,
+                    //           ),
+                    //         ],
+                    //       ),
+                    //     ),
+                    //   ],
+                    // ),
                     FloatingActionButton.small(
                       heroTag: 'fab-back',
                       onPressed: () => Navigator.pop(context),

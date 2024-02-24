@@ -6,6 +6,7 @@ import 'package:course_dilaundry/config/failure.dart';
 import 'package:course_dilaundry/config/nav.dart';
 import 'package:course_dilaundry/datasources/user_datasource.dart';
 import 'package:course_dilaundry/models/user_model.dart';
+import 'package:course_dilaundry/pages/dashboard_views/store_page.dart';
 import 'package:course_dilaundry/pages/login_page.dart';
 import 'package:d_info/d_info.dart';
 import 'package:d_input/d_input.dart';
@@ -26,7 +27,8 @@ class AccountView extends ConsumerStatefulWidget {
 class _AccountViewState extends ConsumerState<AccountView> {
   late String username = '';
   late String email = '';
-  logout(BuildContext context) {
+  late String role = '';
+  logout(context) {
     DInfo.dialogConfirmation(
       context,
       'Logout',
@@ -45,10 +47,12 @@ class _AccountViewState extends ConsumerState<AccountView> {
   void initState() {
     username = "";
     email = "";
+    role = "";
     AppSession.getUser().then((value) => {
           setState(() {
             username = value!.username;
-            email = value!.email;
+            email = value.email;
+            role = value.role;
           })
         });
     super.initState();
@@ -283,6 +287,44 @@ class _AccountViewState extends ConsumerState<AccountView> {
           ),
         ),
         DView.height(30),
+        if (role == 'Admin') ...[
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 30),
+            child: Text(
+              'Administrator',
+              style: TextStyle(
+                height: 1,
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
+            ),
+          ),
+          DView.height(10),
+          // ListTile(
+          //   onTap: () {},
+          //   contentPadding: const EdgeInsets.symmetric(horizontal: 30),
+          //   dense: true,
+          //   leading: const Icon(Icons.online_prediction_rounded),
+          //   horizontalTitleGap: 20,
+          //   title: const Text('Order'),
+          //   trailing: const Icon(Icons.navigate_next),
+          //   iconColor: Colors.grey[600],
+          // ),
+          ListTile(
+            onTap: () {
+              Nav.push(context, const StorePage());
+            },
+            contentPadding: const EdgeInsets.symmetric(horizontal: 30),
+            dense: true,
+            leading: const Icon(Icons.store),
+            horizontalTitleGap: 20,
+            title: const Text('Store'),
+            trailing: const Icon(Icons.navigate_next),
+            iconColor: Colors.grey[600],
+          ),
+          DView.height(30),
+        ] else
+          ...[],
         const Padding(
           padding: EdgeInsets.symmetric(horizontal: 30),
           child: Text(

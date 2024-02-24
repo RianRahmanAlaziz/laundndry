@@ -170,7 +170,7 @@ class DetailShopPage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
-                AppFormat.longPrice(shop.price),
+                AppFormat.longPrice(shop.price_cuci_komplit),
                 textAlign: TextAlign.right,
                 style: const TextStyle(
                   height: 1,

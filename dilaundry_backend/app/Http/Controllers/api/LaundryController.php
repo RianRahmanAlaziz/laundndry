@@ -5,6 +5,7 @@ namespace App\Http\Controllers\api;
 use App\Http\Controllers\Controller;
 use App\Models\Laundry;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class LaundryController extends Controller
 {
@@ -34,6 +35,34 @@ class LaundryController extends Controller
                 'data' => $laundries,
             ], 404);
         }
+    }
+
+    function create(Request $request){
+        $input = $request->all();
+
+        // return response()->json([
+        //     'data' => $input["total"],
+        // ],200);
+
+        $input['claim_code'] = Str::upper(Str::random(10));
+        $input['with_pickup'] = true;
+        $input['with_delivery'] = true;
+        $input['status'] = 'New';
+         $user = Laundry::create($input);
+
+        return response()->json([
+            'data' => $user,
+        ], 201);
+    }
+
+    function updateStatus($id, $status){
+        $data = Laundry::findOrFail($id);
+
+        $data->update(['status' => $status]);
+        
+        return response()->json([
+            'data' => $data,
+        ], 201);
     }
 
     function claim(Request $request)

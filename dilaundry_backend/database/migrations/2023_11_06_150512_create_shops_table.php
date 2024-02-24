@@ -22,7 +22,9 @@ return new class extends Migration
             $table->string('whatsapp');
             $table->text('category');
             $table->text('description');
-            $table->double('price');
+            $table->double('price_cuci_komplit');
+            $table->double('price_dry_clean');
+            $table->double('price_cuci_satuan');
             $table->double('rate');
             $table->timestamps();
         });

@@ -3,8 +3,8 @@ import 'user_model.dart';
 
 class LaundryModel {
   LaundryModel({
-    required this.id,
-    required this.claimCode,
+    this.id,
+    this.claimCode,
     required this.userId,
     required this.shopId,
     required this.weight,
@@ -13,16 +13,16 @@ class LaundryModel {
     required this.pickupAddress,
     required this.deliveryAddress,
     required this.total,
-    required this.description,
+    this.description,
     required this.status,
-    required this.createdAt,
-    required this.updatedAt,
-    required this.user,
+    this.createdAt,
+    this.updatedAt,
+    this.user,
     required this.shop,
   });
 
-  int id;
-  String claimCode;
+  int? id;
+  String? claimCode;
   int userId;
   int shopId;
   double weight;
@@ -31,11 +31,11 @@ class LaundryModel {
   String pickupAddress;
   String deliveryAddress;
   double total;
-  String description;
+  String? description;
   String status;
-  DateTime createdAt;
-  DateTime updatedAt;
-  UserModel user;
+  DateTime? createdAt;
+  DateTime? updatedAt;
+  UserModel? user;
   ShopModel shop;
 
   factory LaundryModel.fromJson(Map<String, dynamic> json) => LaundryModel(
@@ -70,9 +70,9 @@ class LaundryModel {
         "total": total,
         "description": description,
         "status": status,
-        "created_at": createdAt.toIso8601String(),
-        "updated_at": updatedAt.toIso8601String(),
-        "user": user.toJson(),
+        "created_at": createdAt!.toIso8601String(),
+        "updated_at": updatedAt!.toIso8601String(),
+        "user": user!.toJson(),
         "shop": shop.toJson(),
       };
 }

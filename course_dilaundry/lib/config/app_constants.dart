@@ -17,6 +17,7 @@ class AppConstants {
 
   static const laundryStatusCategory = [
     'All',
+    'New',
     'Pickup',
     'Queue',
     'Process',

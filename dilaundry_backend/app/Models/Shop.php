@@ -27,7 +27,9 @@ class Shop extends Model
         'pickup',
         'whatsapp',
         'description',
-        'price',
+        'price_cuci_komlpit',
+        'price_dry_clean',
+        'price_cuci_satuan',
         'rate',
     ];
     

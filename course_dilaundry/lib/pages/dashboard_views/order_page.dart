@@ -1,9 +1,15 @@
+import 'package:course_dilaundry/config/app_session.dart';
 import 'package:course_dilaundry/config/nav.dart';
+import 'package:course_dilaundry/datasources/laundry_datasource.dart';
+import 'package:course_dilaundry/models/laundry_model.dart';
 import 'package:course_dilaundry/models/shop_model.dart';
+import 'package:course_dilaundry/models/user_model.dart';
 import 'package:course_dilaundry/pages/dashboard_page.dart';
 import 'package:course_dilaundry/pages/dashboard_views/my_laundry_view.dart';
 import 'package:course_dilaundry/providers/dashboard_provider.dart';
 import 'package:course_dilaundry/providers/my_laundry_provider.dart';
+import 'package:d_input/d_input.dart';
+import 'package:d_view/d_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -15,12 +21,22 @@ class Orderpage extends StatefulWidget {
 
   @override
   // ignore: library_private_types_in_public_api
-  _OrderpageState createState() => _OrderpageState();
+  State<Orderpage> createState() => _OrderpageState();
 }
 
 class _OrderpageState extends State<Orderpage> {
+  late UserModel user;
   final List<OrderItem> _orderItems = [];
   double _totalPrice = 0.0;
+  int _totalWeight = 0;
+
+  @override
+  void initState() {
+    AppSession.getUser().then((value) {
+      user = value!;
+    });
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,10 +67,9 @@ class _OrderpageState extends State<Orderpage> {
                     margin: const EdgeInsets.symmetric(vertical: 8),
                     child: ListTile(
                       title: Text(_orderItems[index].itemName),
-                      subtitle:
-                          Text('Quantity: ${_orderItems[index].quantity}'),
+                      subtitle: Text('Kg: ${_orderItems[index].quantity}'),
                       trailing: Text(
-                          '\Rp.${_orderItems[index].totalPrice.toStringAsFixed(2)}'),
+                          '\Rp.${_orderItems[index].totalPrice.toStringAsFixed(0)}'),
                     ),
                   );
                 },
@@ -62,7 +77,15 @@ class _OrderpageState extends State<Orderpage> {
             ),
             const SizedBox(height: 16),
             Text(
-              'Total: \Rp.$_totalPrice',
+              'Total Price: \Rp.$_totalPrice',
+              style: const TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.black, // Warna teks Total
+              ),
+            ),
+            Text(
+              'Total Weight: $_totalWeight',
               style: const TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -70,22 +93,39 @@ class _OrderpageState extends State<Orderpage> {
               ),
             ),
             const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () {
-                _completeOrder();
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor:
-                    Colors.green, // Warna tombol Selesaikan Pesanan
-              ),
-              child: const Text(
-                'Selesaikan Pesanan',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
+            if (_orderItems.isNotEmpty)
+              ElevatedButton(
+                onPressed: () {
+                  LaundryDatasource.create(
+                          user.id,
+                          widget.shop.id,
+                          double.parse(_totalWeight.toString()),
+                          _totalPrice,
+                          user.address,
+                          user.address,
+                          '')
+                      .then((value) => {
+                            value.fold(
+                              (failure) {},
+                              (result) {
+                                _resetOrder();
+                                _completeOrder();
+                              },
+                            )
+                          });
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor:
+                      Colors.green, // Warna tombol Selesaikan Pesanan
+                ),
+                child: const Text(
+                  'Selesaikan Pesanan',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
-            ),
           ],
         ),
       ),
@@ -110,22 +150,19 @@ class _OrderpageState extends State<Orderpage> {
               LaundryOptionButton(
                 optionName: 'Cuci Komplit',
                 onPressed: () {
-                  _addItemToOrder('Cuci Komplit', 20.0, 1);
-                  Navigator.pop(context);
+                  _showDialogKg('Cuci Komplit', widget.shop.price_cuci_komplit);
                 },
               ),
               LaundryOptionButton(
                 optionName: 'Dry Clean',
                 onPressed: () {
-                  _addItemToOrder('Dry Clean', 30.0, 1);
-                  Navigator.pop(context);
+                  _showDialogKg('Dry Clean', widget.shop.price_dry_clean!);
                 },
               ),
               LaundryOptionButton(
                 optionName: 'Cuci Satuan',
                 onPressed: () {
-                  _addItemToOrder('Cuci Satuan', 15.0, 1);
-                  Navigator.pop(context);
+                  _showDialogKg('Cuci Satuan', widget.shop.price_cuci_satuan!);
                 },
               ),
             ],
@@ -144,7 +181,50 @@ class _OrderpageState extends State<Orderpage> {
       );
       _orderItems.add(newItem);
       _totalPrice += newItem.totalPrice;
+      _totalWeight += newItem.quantity;
     });
+    Navigator.pop(context);
+  }
+
+  void _showDialogKg(String itemName, double price) {
+    final kg = TextEditingController();
+    final formKey = GlobalKey<FormState>();
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Form(
+            key: formKey,
+            child: SimpleDialog(
+              titlePadding: const EdgeInsets.all(16),
+              contentPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+              title: const Text('Weight'),
+              children: [
+                DInput(
+                  controller: kg,
+                  title: 'Kg',
+                  radius: BorderRadius.circular(10),
+                  inputType: TextInputType.number,
+                  autofocus: true,
+                ),
+                DView.height(20),
+                ElevatedButton(
+                  onPressed: () {
+                    if (formKey.currentState!.validate()) {
+                      Navigator.pop(context);
+                      _addItemToOrder(itemName, price, int.parse(kg.text));
+                    }
+                  },
+                  child: const Text(
+                    'Tambah',
+                    style: TextStyle(
+                        color: Colors.black87, fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ],
+            ));
+      },
+    );
   }
 
   void _completeOrder() {
@@ -169,7 +249,6 @@ class _OrderpageState extends State<Orderpage> {
                         Consumer(builder: (_, wiRef, __) {
                           return TextButton(
                             onPressed: () {
-                              _resetOrder();
                               // int navIndex =
                               //     wiRef.watch(dashboardNavIndexProvider);
 
@@ -184,7 +263,6 @@ class _OrderpageState extends State<Orderpage> {
                         }),
                         TextButton(
                           onPressed: () {
-                            _resetOrder();
                             Navigator.of(context).pop();
                             launchUrl(Uri.parse(
                                 "https://wa.me/${widget.shop.whatsapp}"));
