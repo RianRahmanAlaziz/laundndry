@@ -13,16 +13,16 @@ return new class extends Migration
     {
         Schema::create('laundries', function (Blueprint $table) {
             $table->id();
-            $table->string('claim_code');
+            $table->string('claim_code')->nullable();
             $table->bigInteger('user_id');
             $table->bigInteger('shop_id');
             $table->double('weight');
-            $table->boolean('with_pickup');
-            $table->boolean('with_delivery');
-            $table->text('pickup_address');
-            $table->text('delivery_address');
+            $table->boolean('with_pickup')->nullable();
+            $table->boolean('with_delivery')->nullable();
+            $table->text('pickup_address')->nullable();
+            $table->text('delivery_address')->nullable();
             $table->double('total');
-            $table->text('description');
+            $table->text('description')->nullable();
             $table->string('status');
             $table->timestamps();
         });
