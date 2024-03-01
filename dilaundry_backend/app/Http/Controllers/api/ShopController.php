@@ -5,6 +5,7 @@ namespace App\Http\Controllers\api;
 use App\Http\Controllers\Controller;
 use App\Models\Shop;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 
 class ShopController extends Controller
 {
@@ -53,7 +54,8 @@ class ShopController extends Controller
         }
     }
 
-    function create(Request $request){
+    function create(Request $request)
+    {
         $input = $request->all();
 
         // return response()->json([
@@ -67,15 +69,46 @@ class ShopController extends Controller
         ], 201);
     }
 
-    function update($id, Request $request){
-        $input = $request->all();
+    function update($id, Request $request, Shop $shop)
+    {
+        try {
 
-        $data = Shop::findOrFail($id);
+            $input = $request->all();
 
-         $$data->update($input);
+            $shop = Shop::findOrFail($id);
+
+            $shop->update($input);
+
+            return response()->json([
+                'data' => $shop,
+            ], 200);
+        } catch (ValidationException $e) {
+            return response()->json([
+                'error' => $e->errors(),
+            ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Gagal memperbarui data.',
+            ], 500);
+        }
+
+        // $data = Shop::findOrFail($id);
+
+        // $data->update($input);
+
+        // return response()->json([
+        //     'data' => $data,
+        // ], 201);
+    }
+
+    function delete($id)
+    {
+        $shop = Shop::findOrFail($id);
+
+        $shop->delete();
 
         return response()->json([
-            'data' => $shop,
-        ], 201);
+            'massage' => 'success',
+        ], 200);
     }
 }

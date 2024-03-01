@@ -26,16 +26,18 @@ class Shop extends Model
         'delivery',
         'pickup',
         'whatsapp',
+        'category',
         'description',
         'price_cuci_komlpit',
         'price_dry_clean',
         'price_cuci_satuan',
         'rate',
     ];
-    
+
     public $appends = ['categories'];
 
-    public function getCategoriesAttribute(){
+    public function getCategoriesAttribute()
+    {
         return explode(', ', $this->category);
     }
 }

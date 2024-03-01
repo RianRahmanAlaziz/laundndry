@@ -13,12 +13,12 @@ return new class extends Migration
     {
         Schema::create('shops', function (Blueprint $table) {
             $table->id();
-            $table->string('image');
+            $table->string('image')->nullable();
             $table->string('name');
             $table->string('location');
             $table->string('city');
-            $table->boolean('delivery');
-            $table->boolean('pickup');
+            $table->boolean('delivery')->nullable();
+            $table->boolean('pickup')->nullable();
             $table->string('whatsapp');
             $table->text('category');
             $table->text('description');
