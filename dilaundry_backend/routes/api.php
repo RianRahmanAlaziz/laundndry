@@ -31,7 +31,6 @@ Route::post('/user/edit', [UserController::class, 'editprofil']);
 Route::post('/register', [UserController::class, 'register']);
 Route::post('/login', [UserController::class, 'login']);
 
-Route::put('/shop/{id}', [ShopController::class, 'update']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/laundry', [LaundryController::class, 'readAll']);
