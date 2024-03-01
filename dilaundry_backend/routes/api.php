@@ -26,9 +26,11 @@ Route::get('/promo', [PromoController::class, 'readAll']);
 Route::get('/shop', [ShopController::class, 'readAll']);
 // Route::get('/laundry', [LaundryController::class, 'readAll']);
 Route::get('/user', [UserController::class, 'readAll']);
+Route::post('/user/edit', [UserController::class, 'editprofil']);
 
 Route::post('/register', [UserController::class, 'register']);
 Route::post('/login', [UserController::class, 'login']);
+
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/laundry', [LaundryController::class, 'readAll']);
@@ -38,16 +40,19 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/laundry/claim', [LaundryController::class, 'claim']);
     Route::get('/laundry/{id}/{status}', [LaundryController::class, 'updateStatus']);
 
+<<<<<<< HEAD
     Route::post('/shop', [ShopController::class, 'create']);
     Route::delete('/shop/{id}', [ShopController::class, 'delete']);
 
+=======
+>>>>>>> 375ee2cbd3fcc2730232988bc0ee4c005f2dfef8
     // Promo
     Route::get('/promo/limit', [PromoController::class, 'readLimit']);
 
     // Shop
     Route::get('/shop/recommendation/limit', [ShopController::class, 'readRecommendationLimit']);
     Route::get('/shop/search/city/{name}', [ShopController::class, 'searchByCity']);
-
-    Route::post('/user/edit', [UserController::class, 'editprofil']);
-    
+    Route::post('/shop', [ShopController::class, 'create']);
+    Route::put('/shop/{id}', [ShopController::class, 'update']);
+    Route::delete('/shop/{id}', [ShopController::class, 'delete']);
 });
