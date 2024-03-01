@@ -52,4 +52,30 @@ class ShopController extends Controller
             ], 404);
         }
     }
+
+    function create(Request $request){
+        $input = $request->all();
+
+        // return response()->json([
+        //     'data' => $input["total"],
+        // ],200);
+
+        $shop = Shop::create($input);
+
+        return response()->json([
+            'data' => $shop,
+        ], 201);
+    }
+
+    function update($id, Request $request){
+        $input = $request->all();
+
+        $data = Shop::findOrFail($id);
+
+         $$data->update($input);
+
+        return response()->json([
+            'data' => $shop,
+        ], 201);
+    }
 }

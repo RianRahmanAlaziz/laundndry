@@ -1,34 +1,27 @@
+import 'dart:io';
+
 import 'package:course_dilaundry/config/app_assets.dart';
-import 'package:course_dilaundry/config/app_colors.dart';
 import 'package:course_dilaundry/config/app_constants.dart';
-import 'package:course_dilaundry/config/app_format.dart';
 import 'package:course_dilaundry/config/failure.dart';
-import 'package:course_dilaundry/config/nav.dart';
-import 'package:course_dilaundry/datasources/promo_datasource.dart';
 import 'package:course_dilaundry/datasources/shop_datasource.dart';
-import 'package:course_dilaundry/models/promo_model.dart';
 import 'package:course_dilaundry/models/shop_model.dart';
-import 'package:course_dilaundry/pages/dashboard_views/detail_shop_page.dart';
-import 'package:course_dilaundry/pages/search_by_city_page.dart';
 import 'package:course_dilaundry/providers/home_provider.dart';
 import 'package:course_dilaundry/widgets/error_background.dart';
-import 'package:d_button/d_button.dart';
 import 'package:d_input/d_input.dart';
 import 'package:d_view/d_view.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+import 'package:image_picker/image_picker.dart';
 
-class StorePage extends ConsumerStatefulWidget {
-  const StorePage({super.key});
+class ShopPage extends ConsumerStatefulWidget {
+  const ShopPage({super.key});
 
   @override
-  ConsumerState<StorePage> createState() => _StorePageState();
+  ConsumerState<ShopPage> createState() => _ShopPageState();
 }
 
-class _StorePageState extends ConsumerState<StorePage> {
+class _ShopPageState extends ConsumerState<ShopPage> {
   // late String username = '';
   // late String email = '';
   // late String role = '';
@@ -46,6 +39,10 @@ class _StorePageState extends ConsumerState<StorePage> {
   //     }
   //   });
   // }
+  bool isDelivery = false;
+  late bool isPickup;
+  File? _image;
+  final picker = ImagePicker();
 
   getShop() {
     ShopDatasource.getAll().then((value) {
@@ -83,8 +80,19 @@ class _StorePageState extends ConsumerState<StorePage> {
     });
   }
 
+  void _changeState(bool? value) {
+    setState(() {
+      isDelivery = value!;
+    });
+  }
+
   void _dialogInput() {
     final name = TextEditingController();
+    final location = TextEditingController();
+    final city = TextEditingController();
+    final whatsapp = TextEditingController();
+    final category = TextEditingController();
+    final description = TextEditingController();
     final formKey = GlobalKey<FormState>();
 
     showDialog(
@@ -99,7 +107,31 @@ class _StorePageState extends ConsumerState<StorePage> {
               children: [
                 DInput(
                   controller: name,
-                  title: 'Kg',
+                  title: 'Name',
+                  radius: BorderRadius.circular(10),
+                  inputType: TextInputType.number,
+                  autofocus: true,
+                ),
+                DView.height(20),
+                DInput(
+                  controller: location,
+                  title: 'Location',
+                  radius: BorderRadius.circular(10),
+                  inputType: TextInputType.number,
+                  autofocus: true,
+                ),
+                DView.height(20),
+                DInput(
+                  controller: city,
+                  title: 'City',
+                  radius: BorderRadius.circular(10),
+                  inputType: TextInputType.number,
+                  autofocus: true,
+                ),
+                DView.height(20),
+                DInput(
+                  controller: description,
+                  title: 'Description',
                   radius: BorderRadius.circular(10),
                   inputType: TextInputType.number,
                   autofocus: true,
@@ -117,6 +149,16 @@ class _StorePageState extends ConsumerState<StorePage> {
                         color: Colors.black87, fontWeight: FontWeight.bold),
                   ),
                 ),
+                DView.height(8),
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text(
+                    'Cancel',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
               ],
             ));
       },
@@ -125,8 +167,35 @@ class _StorePageState extends ConsumerState<StorePage> {
 
   @override
   void initState() {
+    _image = null;
     getShop();
     super.initState();
+  }
+
+  Future getImage() async {
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+    setState(() {
+      if (pickedFile != null) {
+        _image = File(pickedFile.path);
+        print(pickedFile.path);
+      } else {
+        print('No image selected.');
+      }
+    });
+  }
+
+  Widget _buildImage() {
+    if (_image == null) {
+      return const Padding(
+        padding: EdgeInsets.fromLTRB(1, 1, 1, 1),
+        child: Icon(
+          Icons.add,
+          color: Colors.grey,
+        ),
+      );
+    } else {
+      return Text(_image!.path);
+    }
   }
 
   @override
@@ -147,7 +216,7 @@ class _StorePageState extends ConsumerState<StorePage> {
                         icon: const Icon(Icons.arrow_back_ios),
                       ),
                       Text(
-                        'Store List',
+                        'Shop List',
                         style: GoogleFonts.montserrat(
                           fontSize: 24,
                           color: Colors.green,

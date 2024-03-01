@@ -6,7 +6,7 @@ import 'package:course_dilaundry/config/failure.dart';
 import 'package:course_dilaundry/config/nav.dart';
 import 'package:course_dilaundry/datasources/user_datasource.dart';
 import 'package:course_dilaundry/models/user_model.dart';
-import 'package:course_dilaundry/pages/dashboard_views/store_page.dart';
+import 'package:course_dilaundry/pages/dashboard_views/shop_page.dart';
 import 'package:course_dilaundry/pages/login_page.dart';
 import 'package:d_info/d_info.dart';
 import 'package:d_input/d_input.dart';
@@ -312,13 +312,13 @@ class _AccountViewState extends ConsumerState<AccountView> {
           // ),
           ListTile(
             onTap: () {
-              Nav.push(context, const StorePage());
+              Nav.push(context, const ShopPage());
             },
             contentPadding: const EdgeInsets.symmetric(horizontal: 30),
             dense: true,
             leading: const Icon(Icons.store),
             horizontalTitleGap: 20,
-            title: const Text('Store'),
+            title: const Text('Shop'),
             trailing: const Icon(Icons.navigate_next),
             iconColor: Colors.grey[600],
           ),

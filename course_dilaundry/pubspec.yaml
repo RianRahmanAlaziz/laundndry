@@ -21,6 +21,7 @@ dependencies:
   google_fonts: ^6.1.0
   grouped_list: ^5.1.2
   http: ^1.1.2
+  image_picker: ^1.0.7
   intl: ^0.18.1
   shared_preferences: ^2.2.2
   smooth_page_indicator: ^1.1.0
