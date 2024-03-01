@@ -40,12 +40,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/laundry/claim', [LaundryController::class, 'claim']);
     Route::get('/laundry/{id}/{status}', [LaundryController::class, 'updateStatus']);
 
-<<<<<<< HEAD
-    Route::post('/shop', [ShopController::class, 'create']);
-    Route::delete('/shop/{id}', [ShopController::class, 'delete']);
-
-=======
->>>>>>> 375ee2cbd3fcc2730232988bc0ee4c005f2dfef8
     // Promo
     Route::get('/promo/limit', [PromoController::class, 'readLimit']);
 

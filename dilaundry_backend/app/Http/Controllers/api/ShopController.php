@@ -117,13 +117,4 @@ class ShopController extends Controller
         ], 200);
     }
 
-    function delete($id){
-        $data = Shop::findOrFail($id);
-
-         $data->delete();
-
-        return response()->json([
-            'data' => $data,
-        ], 200);
-    }
 }
