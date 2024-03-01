@@ -37,7 +37,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/laundry/user/{id}', [LaundryController::class, 'whereUserId']);
     Route::post('/laundry/claim', [LaundryController::class, 'claim']);
     Route::get('/laundry/{id}/{status}', [LaundryController::class, 'updateStatus']);
-    
+
+    Route::post('/shop', [ShopController::class, 'create']);
+    Route::delete('/shop/{id}', [ShopController::class, 'delete']);
+
     // Promo
     Route::get('/promo/limit', [PromoController::class, 'readLimit']);
 

@@ -3,19 +3,23 @@ import 'package:course_dilaundry/config/app_colors.dart';
 import 'package:course_dilaundry/config/app_constants.dart';
 import 'package:course_dilaundry/config/app_format.dart';
 import 'package:course_dilaundry/config/nav.dart';
+import 'package:course_dilaundry/datasources/shop_datasource.dart';
 import 'package:course_dilaundry/models/shop_model.dart';
 import 'package:course_dilaundry/pages/dashboard_views/order_page.dart';
+import 'package:course_dilaundry/pages/dashboard_views/shop_page.dart';
 import 'package:d_info/d_info.dart';
 import 'package:d_view/d_view.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:whatsapp_unilink/whatsapp_unilink.dart';
 
 class DetailShopPage extends StatelessWidget {
-  const DetailShopPage({super.key, required this.shop});
+  const DetailShopPage({super.key, required this.shop, required this.from});
   final ShopModel shop;
+  final String from;
 
   launchWA(BuildContext context, String number) async {
     bool? yes = await DInfo.dialogConfirmation(
@@ -52,23 +56,91 @@ class DetailShopPage extends StatelessWidget {
           DView.height(20),
           description(),
           DView.height(20),
-          Container(
-            height: 50,
-            margin: const EdgeInsets.symmetric(horizontal: 24),
-            child: ElevatedButton(
-              onPressed: () {
-                Nav.push(context, Orderpage(shop: shop));
-              },
-              child: const Text(
-                'Order',
-                style: TextStyle(
-                    height: 1,
-                    fontSize: 18,
-                    color: Colors.white70,
-                    fontWeight: FontWeight.bold),
+          if (from == 'Front')
+            Container(
+              height: 50,
+              margin: const EdgeInsets.symmetric(horizontal: 24),
+              child: ElevatedButton(
+                onPressed: () {
+                  Nav.push(context, Orderpage(shop: shop));
+                },
+                child: const Text(
+                  'Order',
+                  style: TextStyle(
+                      height: 1,
+                      fontSize: 18,
+                      color: Colors.white70,
+                      fontWeight: FontWeight.bold),
+                ),
               ),
+            )
+          else
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                // ElevatedButton(
+                //   onPressed: () {
+                //     Nav.push(context, Orderpage(shop: shop));
+                //   },
+                //   child: const Text(
+                //     'Update',
+                //     style: TextStyle(
+                //         height: 1,
+                //         fontSize: 18,
+                //         color: Colors.white70,
+                //         fontWeight: FontWeight.bold),
+                //   ),
+                // ),
+                ElevatedButton(
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: const Text('Delete'),
+                          content: const Text(
+                              'Apakah anda ingin menghapus toko ini?'),
+                          actions: [
+                            Consumer(builder: (_, wiRef, __) {
+                              return TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: const Text('TIDAK'),
+                              );
+                            }),
+                            TextButton(
+                              onPressed: () {
+                                ShopDatasource.delete(shop.id).then((value) => {
+                                      value.fold(
+                                        (failure) {},
+                                        (result) {
+                                          Navigator.pop(context);
+                                          Nav.push(context, const ShopPage());
+                                          DInfo.toastSuccess(
+                                              'Delete shop success');
+                                        },
+                                      )
+                                    });
+                              },
+                              child: const Text('YA'),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  },
+                  child: const Text(
+                    'Delete',
+                    style: TextStyle(
+                        height: 1,
+                        fontSize: 18,
+                        color: Colors.white70,
+                        fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ],
             ),
-          ),
           DView.height(20),
         ],
       ),
@@ -254,32 +326,32 @@ class DetailShopPage extends StatelessWidget {
                         ),
                       ),
                       DView.height(8),
-                      Row(
-                        children: [
-                          RatingBar.builder(
-                            initialRating: shop.rate,
-                            itemCount: 5,
-                            allowHalfRating: true,
-                            itemPadding: const EdgeInsets.all(0),
-                            unratedColor: Colors.grey[300],
-                            itemBuilder: (context, index) => const Icon(
-                              Icons.star,
-                              color: Colors.amber,
-                            ),
-                            itemSize: 12,
-                            onRatingUpdate: (value) {},
-                            ignoreGestures: true,
-                          ),
-                          DView.width(4),
-                          Text(
-                            '(${shop.rate})',
-                            style: const TextStyle(
-                              color: Colors.white70,
-                              fontSize: 11,
-                            ),
-                          ),
-                        ],
-                      ),
+                      // Row(
+                      //   children: [
+                      //     // RatingBar.builder(
+                      //     //   initialRating: shop.rate,
+                      //     //   itemCount: 5,
+                      //     //   allowHalfRating: true,
+                      //     //   itemPadding: const EdgeInsets.all(0),
+                      //     //   unratedColor: Colors.grey[300],
+                      //     //   itemBuilder: (context, index) => const Icon(
+                      //     //     Icons.star,
+                      //     //     color: Colors.amber,
+                      //     //   ),
+                      //     //   itemSize: 12,
+                      //     //   onRatingUpdate: (value) {},
+                      //     //   ignoreGestures: true,
+                      //     // ),
+                      //     // DView.width(4),
+                      //     Text(
+                      //       '(${shop.rate})',
+                      //       style: const TextStyle(
+                      //         color: Colors.white70,
+                      //         fontSize: 11,
+                      //       ),
+                      //     ),
+                      //   ],
+                      // ),
                       !shop.pickup && !shop.delivery
                           ? DView.nothing()
                           : Padding(

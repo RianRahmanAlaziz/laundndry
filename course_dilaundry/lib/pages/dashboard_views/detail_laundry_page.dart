@@ -137,7 +137,12 @@ class _DetailLaundryPageState extends ConsumerState<DetailLaundryPage> {
           divider(),
           InkWell(
             onTap: () {
-              Nav.push(context, DetailShopPage(shop: widget.laundry.shop));
+              Nav.push(
+                  context,
+                  DetailShopPage(
+                    shop: widget.laundry.shop,
+                    from: 'front',
+                  ));
             },
             child: itemInfo(Icons.store, widget.laundry.shop.name),
           ),

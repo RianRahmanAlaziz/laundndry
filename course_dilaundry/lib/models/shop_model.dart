@@ -1,7 +1,7 @@
 class ShopModel {
   ShopModel({
     required this.id,
-    required this.image,
+    this.image,
     required this.name,
     required this.location,
     required this.city,
@@ -19,7 +19,7 @@ class ShopModel {
   });
 
   int id;
-  String image;
+  String? image;
   String name;
   String location;
   String city;

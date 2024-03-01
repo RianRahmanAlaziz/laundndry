@@ -10,7 +10,7 @@ class ShopController extends Controller
 {
     function readAll()
     {
-        $shops = Shop::all();
+        $shops = Shop::orderBy('created_at', 'desc')->get();
 
         return response()->json([
             'data' => $shops,
@@ -57,8 +57,13 @@ class ShopController extends Controller
         $input = $request->all();
 
         // return response()->json([
-        //     'data' => $input["total"],
+        //     'data' => $input,
         // ],200);
+
+        $input['delivery'] = 1;
+        $input['pickup'] = 1;
+        $input['rate'] = 0;
+    
 
         $shop = Shop::create($input);
 
@@ -77,5 +82,15 @@ class ShopController extends Controller
         return response()->json([
             'data' => $shop,
         ], 201);
+    }
+
+    function delete($id){
+        $data = Shop::findOrFail($id);
+
+         $data->delete();
+
+        return response()->json([
+            'data' => $data,
+        ], 200);
     }
 }
