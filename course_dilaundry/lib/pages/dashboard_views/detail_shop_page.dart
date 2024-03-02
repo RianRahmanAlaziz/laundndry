@@ -115,10 +115,10 @@ class DetailShopPage extends StatelessWidget {
                                       value.fold(
                                         (failure) {},
                                         (result) {
-                                          Navigator.pop(context);
-                                          Nav.push(context, const ShopPage());
                                           DInfo.toastSuccess(
                                               'Delete shop success');
+                                          Navigator.pop(context);
+                                          Nav.push(context, const ShopPage());
                                         },
                                       )
                                     });
