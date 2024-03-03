@@ -65,6 +65,11 @@ class ShopController extends Controller
         $input['delivery'] = 1;
         $input['pickup'] = 1;
         $input['rate'] = 0;
+
+        $input['price_cuci_komplit'] = doubleval($request['price_cuci_komplit']);
+        $input['price_dry_clean'] = doubleval($request['price_dry_clean']);
+        $input['price_cuci_satuan'] = doubleval($request['price_cuci_satuan']);
+
     
 
         $shop = Shop::create($input);
@@ -74,36 +79,26 @@ class ShopController extends Controller
         ], 201);
     }
 
-    function update($id, Request $request, Shop $shop)
+    function update($id, Request $request)
     {
-        try {
+        $input = $request->all();
 
-            $input = $request->all();
+        $input['delivery'] = 1;
+        $input['pickup'] = 1;
+        $input['rate'] = 0;
 
-            $shop = Shop::findOrFail($id);
+        $input['price_cuci_komplit'] = doubleval($request['price_cuci_komplit']);
+        $input['price_dry_clean'] = doubleval($request['price_dry_clean']);
+        $input['price_cuci_satuan'] = doubleval($request['price_cuci_satuan']);
 
-            $shop->update($input);
+   
+        $shop = Shop::findOrFail($id);
+        
+        $shop->update($input);
 
-            return response()->json([
-                'data' => $shop,
-            ], 200);
-        } catch (ValidationException $e) {
-            return response()->json([
-                'error' => $e->errors(),
-            ], 422);
-        } catch (\Exception $e) {
-            return response()->json([
-                'error' => 'Gagal memperbarui data.',
-            ], 500);
-        }
-
-        // $data = Shop::findOrFail($id);
-
-        // $data->update($input);
-
-        // return response()->json([
-        //     'data' => $data,
-        // ], 201);
+        return response()->json([
+            'data' => $shop,
+        ], 200);
     }
 
     function delete($id)

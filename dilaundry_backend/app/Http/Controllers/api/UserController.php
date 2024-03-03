@@ -30,6 +30,7 @@ class UserController extends Controller
         $user = User::create([
             'username' => $request->username,
             'email' => $request->email,
+            'address' => $request->address,
             'role' => $request->role,
             'password' => Hash::make($request->password),
         ]);
@@ -69,11 +70,12 @@ class UserController extends Controller
             $user->update([
                 'username' => $request->username,
                 'email' => $request->email,
+                'address' => $request->address,
                 'password' => Hash::make($request->password)
             ]);
         } else {
            
-            $user->update($request->only('username','email'));
+            $user->update($request->only('username','email','address'));
         }
 
         //  if (!Auth::attempt($request->only('email', 'password'))) {

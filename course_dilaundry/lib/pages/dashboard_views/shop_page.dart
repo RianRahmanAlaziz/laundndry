@@ -12,6 +12,7 @@ import 'package:course_dilaundry/widgets/error_background.dart';
 import 'package:d_info/d_info.dart';
 import 'package:d_input/d_input.dart';
 import 'package:d_view/d_view.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -42,9 +43,7 @@ class _ShopPageState extends ConsumerState<ShopPage> {
   //     }
   //   });
   // }
-  bool isDelivery = false;
-  late bool isPickup;
-  File? _image;
+
   final picker = ImagePicker();
 
   getShop() {
@@ -83,23 +82,19 @@ class _ShopPageState extends ConsumerState<ShopPage> {
     });
   }
 
-  void _changeState(bool? value) {
-    setState(() {
-      isDelivery = value!;
-    });
-  }
-
   void _dialogInput() {
     final name = TextEditingController();
     final location = TextEditingController();
     final city = TextEditingController();
     final whatsapp = TextEditingController();
-    final price_cuci_komplit = TextEditingController();
-    final price_dry_clean = TextEditingController();
-    final price_cuci_satuan = TextEditingController();
+    final priceCuciKomplit = TextEditingController();
+    final priceDryClean = TextEditingController();
+    final priceCuciSatuan = TextEditingController();
     final category = TextEditingController();
+    final image = TextEditingController();
     final description = TextEditingController();
     final formKey = GlobalKey<FormState>();
+    PlatformFile? objFile;
 
     showDialog(
       context: context,
@@ -112,6 +107,25 @@ class _ShopPageState extends ConsumerState<ShopPage> {
               title: const Text('Shop Input'),
               children: [
                 DInput(
+                  onTap: () async {
+                    FilePickerResult? result =
+                        await FilePicker.platform.pickFiles(
+                      withReadStream: true,
+                    );
+
+                    if (result != null) {
+                      objFile = result.files.single;
+
+                      image.text = objFile!.name;
+                    } else {
+                      print('No image selected.');
+                    }
+                  },
+                  title: 'Image',
+                  controller: image,
+                ),
+                DView.height(20),
+                DInput(
                   controller: name,
                   title: 'Name',
                   radius: BorderRadius.circular(10),
@@ -122,7 +136,6 @@ class _ShopPageState extends ConsumerState<ShopPage> {
                   controller: location,
                   title: 'Location',
                   radius: BorderRadius.circular(10),
-                  autofocus: true,
                 ),
                 DView.height(20),
                 DInput(
@@ -130,7 +143,6 @@ class _ShopPageState extends ConsumerState<ShopPage> {
                   title: 'City',
                   radius: BorderRadius.circular(10),
                   inputType: TextInputType.number,
-                  autofocus: true,
                 ),
                 DView.height(20),
                 DInput(
@@ -145,82 +157,52 @@ class _ShopPageState extends ConsumerState<ShopPage> {
                   title: 'WhatsApp',
                   radius: BorderRadius.circular(10),
                   inputType: TextInputType.number,
-                  autofocus: true,
                 ),
                 DView.height(20),
                 DInput(
                   controller: description,
                   title: 'Description',
                   radius: BorderRadius.circular(10),
-                  autofocus: true,
                 ),
                 DView.height(20),
                 DInput(
-                  controller: price_cuci_komplit,
+                  controller: priceCuciKomplit,
                   title: 'Price Cuci Komplit',
                   radius: BorderRadius.circular(10),
                   inputType: TextInputType.number,
-                  autofocus: true,
                 ),
                 DView.height(20),
                 DInput(
-                  controller: price_dry_clean,
+                  controller: priceDryClean,
                   title: 'Price Dry Clean',
                   radius: BorderRadius.circular(10),
                   inputType: TextInputType.number,
-                  autofocus: true,
                 ),
                 DView.height(20),
                 DInput(
-                  controller: price_cuci_satuan,
+                  controller: priceCuciSatuan,
                   title: 'Price Cuci Satuan',
                   radius: BorderRadius.circular(10),
                   inputType: TextInputType.number,
-                  autofocus: true,
                 ),
                 DView.height(20),
                 ElevatedButton(
                   onPressed: () {
                     ShopDatasource.create(
+                            objFile,
                             name.text,
                             location.text,
                             city.text,
                             int.parse(whatsapp.text),
                             category.text,
                             description.text,
-                            double.parse(price_cuci_komplit.text),
-                            double.parse(price_dry_clean.text),
-                            double.parse(price_cuci_satuan.text))
+                            double.parse(priceCuciKomplit.text),
+                            double.parse(priceDryClean.text),
+                            double.parse(priceCuciSatuan.text))
                         .then((value) {
-                      value.fold(
-                        (failure) {
-                          switch (failure.runtimeType) {
-                            case ServerFailure:
-                              setHomeShopStatus(ref, 'Server Error');
-                              break;
-                            case NotFoundFailure:
-                              setHomeShopStatus(ref, 'Kode Salah');
-                              break;
-                            case ForbiddenFailure:
-                              setHomeShopStatus(ref, 'You don\'t have access');
-                              break;
-                            case BadRequestFailure:
-                              setHomeShopStatus(ref, 'Bad request');
-                              break;
-                            case UnauthorisedFailure:
-                              setHomeShopStatus(ref, 'Unauthorised');
-                              break;
-                            default:
-                              setHomeShopStatus(ref, 'Request Error');
-                              break;
-                          }
-                        },
-                        (result) {
-                          getShop();
-                          Navigator.pop(context);
-                          DInfo.toastSuccess('Add shop success');
-                        },
-                      );
+                      getShop();
+                      Navigator.pop(context);
+                      DInfo.toastSuccess('Add shop success');
                     });
                   },
                   child: const Text(
@@ -247,35 +229,8 @@ class _ShopPageState extends ConsumerState<ShopPage> {
 
   @override
   void initState() {
-    _image = null;
     getShop();
     super.initState();
-  }
-
-  Future getImage() async {
-    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-    setState(() {
-      if (pickedFile != null) {
-        _image = File(pickedFile.path);
-        print(pickedFile.path);
-      } else {
-        print('No image selected.');
-      }
-    });
-  }
-
-  Widget _buildImage() {
-    if (_image == null) {
-      return const Padding(
-        padding: EdgeInsets.fromLTRB(1, 1, 1, 1),
-        child: Icon(
-          Icons.add,
-          color: Colors.grey,
-        ),
-      );
-    } else {
-      return Text(_image!.path);
-    }
   }
 
   @override
@@ -383,7 +338,7 @@ class _ShopPageState extends ConsumerState<ShopPage> {
                                   Nav.push(
                                       context,
                                       DetailShopPage(
-                                        shop: item,
+                                        originShop: item,
                                         from: 'shop',
                                       ));
                                 },

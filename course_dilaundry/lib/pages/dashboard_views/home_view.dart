@@ -229,7 +229,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
                                     Nav.push(
                                         context,
                                         DetailShopPage(
-                                            shop: item, from: 'front'));
+                                            originShop: item, from: 'front'));
                                   },
                                   child: Container(
                                     margin: EdgeInsets.fromLTRB(
@@ -627,8 +627,8 @@ class _HomeViewState extends ConsumerState<HomeView> {
                     ShopModel item = list[index];
                     return GestureDetector(
                       onTap: () {
-                        Nav.push(
-                            context, DetailShopPage(shop: item, from: 'front'));
+                        Nav.push(context,
+                            DetailShopPage(originShop: item, from: 'front'));
                       },
                       child: Container(
                         margin: EdgeInsets.fromLTRB(

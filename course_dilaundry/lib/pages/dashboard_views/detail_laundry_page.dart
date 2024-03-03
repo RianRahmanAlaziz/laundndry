@@ -140,7 +140,7 @@ class _DetailLaundryPageState extends ConsumerState<DetailLaundryPage> {
               Nav.push(
                   context,
                   DetailShopPage(
-                    shop: widget.laundry.shop,
+                    originShop: widget.laundry.shop,
                     from: 'front',
                   ));
             },

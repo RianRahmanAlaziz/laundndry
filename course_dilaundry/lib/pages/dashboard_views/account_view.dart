@@ -28,6 +28,7 @@ class _AccountViewState extends ConsumerState<AccountView> {
   late String username = '';
   late String email = '';
   late String role = '';
+  late String address = '';
   logout(context) {
     DInfo.dialogConfirmation(
       context,
@@ -155,6 +156,7 @@ class _AccountViewState extends ConsumerState<AccountView> {
             final edtusername = TextEditingController();
             final edtpassword = TextEditingController();
             final edtemail = TextEditingController();
+            final address = TextEditingController();
             final formKey = GlobalKey<FormState>();
 
             edtusername.text = username;
@@ -173,6 +175,14 @@ class _AccountViewState extends ConsumerState<AccountView> {
                       DInput(
                         controller: edtusername,
                         title: 'Username',
+                        radius: BorderRadius.circular(10),
+                        validator: (input) =>
+                            input == '' ? "Don't empty" : null,
+                      ),
+                      DView.height(10),
+                      DInput(
+                        controller: address,
+                        title: 'Address',
                         radius: BorderRadius.circular(10),
                         validator: (input) =>
                             input == '' ? "Don't empty" : null,
@@ -200,6 +210,7 @@ class _AccountViewState extends ConsumerState<AccountView> {
                             edtusername.text,
                             edtemail.text,
                             edtpassword.text,
+                            address.text,
                           ).then((value) {
                             String newStatus = '';
                             value.fold(

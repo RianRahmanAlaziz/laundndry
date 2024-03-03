@@ -47,6 +47,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/shop/recommendation/limit', [ShopController::class, 'readRecommendationLimit']);
     Route::get('/shop/search/city/{name}', [ShopController::class, 'searchByCity']);
     Route::post('/shop', [ShopController::class, 'create']);
-    Route::put('/shop/{id}', [ShopController::class, 'update']);
+    Route::post('/shop/{id}', [ShopController::class, 'update']);
     Route::delete('/shop/{id}', [ShopController::class, 'delete']);
 });

@@ -25,6 +25,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
   final edtUsername = TextEditingController();
   final edtEmail = TextEditingController();
   final edtPassword = TextEditingController();
+  final address = TextEditingController();
   final formKey = GlobalKey<FormState>();
 
   execute() {
@@ -37,6 +38,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
       edtUsername.text,
       edtEmail.text,
       edtPassword.text,
+      address.text,
     ).then((value) {
       String newStatus = '';
       value.fold(
@@ -160,6 +162,17 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                                 controller: edtUsername,
                                 fillColor: Colors.white70,
                                 hint: 'Username',
+                                radius: BorderRadius.circular(10),
+                                validator: (input) =>
+                                    input == '' ? "Don't empty" : null,
+                              ),
+                            ),
+                            DView.width(10),
+                            Expanded(
+                              child: DInput(
+                                controller: address,
+                                fillColor: Colors.white70,
+                                hint: 'Address',
                                 radius: BorderRadius.circular(10),
                                 validator: (input) =>
                                     input == '' ? "Don't empty" : null,

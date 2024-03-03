@@ -130,8 +130,8 @@ class _SearchByCityPageState extends ConsumerState<SearchByCityPage> {
                 ShopModel shop = list[index];
                 return ListTile(
                   onTap: () {
-                    Nav.push(
-                        context, DetailShopPage(shop: shop, from: 'front'));
+                    Nav.push(context,
+                        DetailShopPage(originShop: shop, from: 'front'));
                   },
                   leading: CircleAvatar(
                     backgroundColor: AppColors.primary,

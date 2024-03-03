@@ -36,6 +36,7 @@ class UserDatasource {
     String username,
     String email,
     String password,
+    String address,
   ) async {
     Uri url = Uri.parse('${AppConstants.baseURL}/register');
     try {
@@ -46,6 +47,7 @@ class UserDatasource {
           'username': username,
           'email': email,
           'password': password,
+          'address': address
         },
       );
       final data = AppResponse.data(response);
@@ -62,6 +64,7 @@ class UserDatasource {
     String username,
     String email,
     String password,
+    String address,
   ) async {
     Uri url = Uri.parse('${AppConstants.baseURL}/user/edit');
     final token = await AppSession.getBearerToken();
@@ -73,6 +76,7 @@ class UserDatasource {
           'username': username,
           'email': email,
           'password': password,
+          'address': address,
         },
       );
       final data = AppResponse.data(response);
