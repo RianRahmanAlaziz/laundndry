@@ -56,7 +56,7 @@ class DetailShopPage extends StatelessWidget {
           DView.height(20),
           description(),
           DView.height(20),
-          if (from == 'Front')
+          if (from == 'front')
             Container(
               height: 50,
               margin: const EdgeInsets.symmetric(horizontal: 24),
