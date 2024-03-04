@@ -138,18 +138,18 @@ class _AccountViewState extends ConsumerState<AccountView> {
           ),
         ),
         DView.height(10),
-        ListTile(
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: 30,
-          ),
-          onTap: () {},
-          dense: true,
-          horizontalTitleGap: 20,
-          leading: const Icon(Icons.image),
-          title: const Text('Change Profile'),
-          trailing: const Icon(Icons.navigate_next),
-          iconColor: Colors.grey[600],
-        ),
+        // ListTile(
+        //   contentPadding: const EdgeInsets.symmetric(
+        //     horizontal: 30,
+        //   ),
+        //   onTap: () {},
+        //   dense: true,
+        //   horizontalTitleGap: 20,
+        //   leading: const Icon(Icons.image),
+        //   title: const Text('Change Profile'),
+        //   trailing: const Icon(Icons.navigate_next),
+        //   iconColor: Colors.grey[600],
+        // ),
         ListTile(
           contentPadding: const EdgeInsets.symmetric(
             horizontal: 30,

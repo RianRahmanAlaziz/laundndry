@@ -142,7 +142,6 @@ class _ShopPageState extends ConsumerState<ShopPage> {
                   controller: city,
                   title: 'City',
                   radius: BorderRadius.circular(10),
-                  inputType: TextInputType.number,
                 ),
                 DView.height(20),
                 DInput(

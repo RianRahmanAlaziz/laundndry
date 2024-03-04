@@ -30,6 +30,8 @@ Route::get('/user', [UserController::class, 'readAll']);
 Route::post('/register', [UserController::class, 'register']);
 Route::post('/login', [UserController::class, 'login']);
 
+Route::post('/shop/{id}', [ShopController::class, 'update']);
+
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/user/edit', [UserController::class, 'editprofil']);
@@ -47,6 +49,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/shop/recommendation/limit', [ShopController::class, 'readRecommendationLimit']);
     Route::get('/shop/search/city/{name}', [ShopController::class, 'searchByCity']);
     Route::post('/shop', [ShopController::class, 'create']);
-    Route::post('/shop/{id}', [ShopController::class, 'update']);
+
     Route::delete('/shop/{id}', [ShopController::class, 'delete']);
 });

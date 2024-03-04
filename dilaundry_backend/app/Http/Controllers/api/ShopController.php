@@ -5,6 +5,7 @@ namespace App\Http\Controllers\api;
 use App\Http\Controllers\Controller;
 use App\Models\Shop;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
 use Illuminate\Validation\ValidationException;
 
 class ShopController extends Controller
@@ -62,6 +63,18 @@ class ShopController extends Controller
         //     'data' => $input,
         // ],200);
 
+        if ($request->has('image')) {
+            $gambar = $request->file('image');
+            $nama_gambar = time() . rand(1, 9) . '.' . $gambar->getClientOriginalExtension();
+            $gambar->move('storage/shop', $nama_gambar);
+            $input['image'] = $nama_gambar;
+        }
+
+        // if ($request->file('image')) {
+        //     $nama_gambar = time() . rand(1, 9) . '.' . $request->file('image')->getClientOriginalExtension();
+        //     $input['image'] = $request->file('image')->store('shop', $nama_gambar);
+        // }
+
         $input['delivery'] = 1;
         $input['pickup'] = 1;
         $input['rate'] = 0;
@@ -70,7 +83,7 @@ class ShopController extends Controller
         $input['price_dry_clean'] = doubleval($request['price_dry_clean']);
         $input['price_cuci_satuan'] = doubleval($request['price_cuci_satuan']);
 
-    
+
 
         $shop = Shop::create($input);
 
@@ -83,6 +96,18 @@ class ShopController extends Controller
     {
         $input = $request->all();
 
+        $shop = Shop::findOrFail($id);
+        if ($request->has('image')) {
+            File::delete('storage/shop' . $shop->image);
+
+            $gambar = $request->file('image');
+            $nama_gambar = time() . rand(1, 9) . '.' . $gambar->getClientOriginalExtension();
+            $gambar->move('storage/shop', $nama_gambar);
+            $input['image'] = $nama_gambar;
+        } else {
+            unset($input['image']);
+        }
+
         $input['delivery'] = 1;
         $input['pickup'] = 1;
         $input['rate'] = 0;
@@ -91,9 +116,8 @@ class ShopController extends Controller
         $input['price_dry_clean'] = doubleval($request['price_dry_clean']);
         $input['price_cuci_satuan'] = doubleval($request['price_cuci_satuan']);
 
-   
-        $shop = Shop::findOrFail($id);
-        
+
+
         $shop->update($input);
 
         return response()->json([
@@ -101,15 +125,15 @@ class ShopController extends Controller
         ], 200);
     }
 
-    function delete($id)
+    function delete($id,)
     {
-        $shop = Shop::findOrFail($id);
 
+        $shop = Shop::findOrFail($id);
+        File::delete('storage/shop/' . $shop->image);
         $shop->delete();
 
         return response()->json([
             'massage' => 'success',
         ], 200);
     }
-
 }

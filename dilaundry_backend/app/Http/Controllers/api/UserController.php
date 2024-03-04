@@ -31,7 +31,7 @@ class UserController extends Controller
             'username' => $request->username,
             'email' => $request->email,
             'address' => $request->address,
-            'role' => $request->role,
+            'role' => 'User',
             'password' => Hash::make($request->password),
         ]);
 
@@ -60,19 +60,19 @@ class UserController extends Controller
 
     function editprofil(Request $request)
     {
-       $this->validate($request, [
+        $this->validate($request, [
             'username' => 'required|min:4',
             'email' => 'required',
         ]);
 
-         return response()->json([
+        return response()->json([
             'data' => $request->all(),
             // 'token' => $token,
         ], 201);
-      
+
         $user = User::find(Auth::user()->id);
 
-        if($request->password){
+        if ($request->password) {
             $user->update([
                 'username' => $request->username,
                 'email' => $request->email,
@@ -80,8 +80,8 @@ class UserController extends Controller
                 'password' => Hash::make($request->password)
             ]);
         } else {
-           
-            $user->update($request->only('username','email','address'));
+
+            $user->update($request->only('username', 'email', 'address'));
         }
 
         //  if (!Auth::attempt($request->only('email', 'password'))) {

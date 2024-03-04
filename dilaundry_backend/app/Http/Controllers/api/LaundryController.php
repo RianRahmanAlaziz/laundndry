@@ -37,7 +37,8 @@ class LaundryController extends Controller
         }
     }
 
-    function create(Request $request){
+    function create(Request $request)
+    {
         $input = $request->all();
 
         // return response()->json([
@@ -48,18 +49,19 @@ class LaundryController extends Controller
         $input['with_pickup'] = true;
         $input['with_delivery'] = true;
         $input['status'] = 'New';
-         $user = Laundry::create($input);
+        $user = Laundry::create($input);
 
         return response()->json([
             'data' => $user,
         ], 201);
     }
 
-    function updateStatus($id, $status){
+    function updateStatus($id, $status)
+    {
         $data = Laundry::findOrFail($id);
 
         $data->update(['status' => $status]);
-        
+
         return response()->json([
             'data' => $data,
         ], 201);

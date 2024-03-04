@@ -101,7 +101,7 @@ class _OrderpageState extends State<Orderpage> {
                           widget.shop.id,
                           double.parse(_totalWeight.toString()),
                           _totalPrice,
-                          user.address,
+                          widget.shop.location,
                           user.address,
                           '')
                       .then((value) => {
