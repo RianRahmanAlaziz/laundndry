@@ -49,11 +49,13 @@ class _AccountViewState extends ConsumerState<AccountView> {
     username = "";
     email = "";
     role = "";
+    address = "";
     AppSession.getUser().then((value) => {
           setState(() {
             username = value!.username;
             email = value.email;
             role = value.role;
+            address = value.address;
           })
         });
     super.initState();
@@ -156,11 +158,12 @@ class _AccountViewState extends ConsumerState<AccountView> {
             final edtusername = TextEditingController();
             final edtpassword = TextEditingController();
             final edtemail = TextEditingController();
-            final address = TextEditingController();
+            final edtaddress = TextEditingController();
             final formKey = GlobalKey<FormState>();
 
             edtusername.text = username;
             edtemail.text = email;
+            edtaddress.text = address;
 
             showDialog(
               context: context,
@@ -181,7 +184,7 @@ class _AccountViewState extends ConsumerState<AccountView> {
                       ),
                       DView.height(10),
                       DInput(
-                        controller: address,
+                        controller: edtaddress,
                         title: 'Address',
                         radius: BorderRadius.circular(10),
                         validator: (input) =>
@@ -210,7 +213,7 @@ class _AccountViewState extends ConsumerState<AccountView> {
                             edtusername.text,
                             edtemail.text,
                             edtpassword.text,
-                            address.text,
+                            edtaddress.text,
                           ).then((value) {
                             String newStatus = '';
                             value.fold(
@@ -253,6 +256,7 @@ class _AccountViewState extends ConsumerState<AccountView> {
                                 setState(() {
                                   username = result['data']['username'];
                                   email = result['data']['email'];
+                                  address = result['data']['address'];
                                 });
                                 Navigator.pop(context);
                                 DInfo.toastSuccess('Update Success');

@@ -65,7 +65,13 @@ class UserController extends Controller
             'email' => 'required',
         ]);
 
+         return response()->json([
+            'data' => $request->all(),
+            // 'token' => $token,
+        ], 201);
+      
         $user = User::find(Auth::user()->id);
+
         if($request->password){
             $user->update([
                 'username' => $request->username,
