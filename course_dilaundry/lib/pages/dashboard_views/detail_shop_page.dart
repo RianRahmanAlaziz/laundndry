@@ -2,6 +2,7 @@ import 'package:course_dilaundry/config/app_assets.dart';
 import 'package:course_dilaundry/config/app_colors.dart';
 import 'package:course_dilaundry/config/app_constants.dart';
 import 'package:course_dilaundry/config/app_format.dart';
+import 'package:course_dilaundry/config/app_session.dart';
 import 'package:course_dilaundry/config/failure.dart';
 import 'package:course_dilaundry/config/nav.dart';
 import 'package:course_dilaundry/datasources/shop_datasource.dart';
@@ -33,6 +34,7 @@ class DetailShopPage extends ConsumerStatefulWidget {
 
 class _DetailShopPage extends ConsumerState<DetailShopPage> {
   late ShopModel shop;
+  late String role = '';
 
   launchWA(BuildContext context, String number) async {
     bool? yes = await DInfo.dialogConfirmation(
@@ -94,6 +96,13 @@ class _DetailShopPage extends ConsumerState<DetailShopPage> {
   @override
   void initState() {
     shop = widget.originShop;
+
+    role = '';
+    AppSession.getUser().then((value) => {
+          setState(() {
+            role = value!.role;
+          })
+        });
     super.initState();
   }
 
@@ -111,7 +120,7 @@ class _DetailShopPage extends ConsumerState<DetailShopPage> {
           DView.height(20),
           description(),
           DView.height(20),
-          if (widget.from == 'front')
+          if (widget.from == 'front' && role == 'User')
             Container(
               height: 50,
               margin: const EdgeInsets.symmetric(horizontal: 24),
