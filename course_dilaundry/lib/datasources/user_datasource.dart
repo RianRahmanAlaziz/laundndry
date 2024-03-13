@@ -8,6 +8,24 @@ import '../config/failure.dart';
 import '../config/app_session.dart';
 
 class UserDatasource {
+  static Future<Either<Failure, Map>> getAll() async {
+    Uri url = Uri.parse('${AppConstants.baseURL}/users');
+    final token = await AppSession.getBearerToken();
+    try {
+      final response = await http.get(
+        url,
+        headers: AppRequest.header(token),
+      );
+      final data = AppResponse.data(response);
+      return Right(data);
+    } catch (e) {
+      if (e is Failure) {
+        return Left(e);
+      }
+      return Left(FetchFailure(e.toString()));
+    }
+  }
+
   static Future<Either<Failure, Map>> login(
     String email,
     String password,
@@ -49,6 +67,78 @@ class UserDatasource {
           'password': password,
           'address': address
         },
+      );
+      final data = AppResponse.data(response);
+      return Right(data);
+    } catch (e) {
+      if (e is Failure) {
+        return Left(e);
+      }
+      return Left(FetchFailure(e.toString()));
+    }
+  }
+
+  static Future<Either<Failure, Map>> create(String username, String email,
+      String password, String address, String role) async {
+    Uri url = Uri.parse('${AppConstants.baseURL}/users');
+    final token = await AppSession.getBearerToken();
+
+    try {
+      final response = await http.post(
+        url,
+        headers: AppRequest.header(token),
+        body: {
+          'username': username,
+          'email': email,
+          'password': password,
+          'address': address,
+          'role': role
+        },
+      );
+      final data = AppResponse.data(response);
+      return Right(data);
+    } catch (e) {
+      if (e is Failure) {
+        return Left(e);
+      }
+      return Left(FetchFailure(e.toString()));
+    }
+  }
+
+  static Future<Either<Failure, Map>> update(int id, String username,
+      String email, String password, String address, String role) async {
+    Uri url = Uri.parse('${AppConstants.baseURL}/users/$id');
+    final token = await AppSession.getBearerToken();
+
+    try {
+      final response = await http.post(
+        url,
+        headers: AppRequest.header(token),
+        body: {
+          'username': username,
+          'email': email,
+          'password': password,
+          'address': address,
+          'role': role
+        },
+      );
+      final data = AppResponse.data(response);
+      return Right(data);
+    } catch (e) {
+      if (e is Failure) {
+        return Left(e);
+      }
+      return Left(FetchFailure(e.toString()));
+    }
+  }
+
+  static Future<Either<Failure, Map>> delete(int id) async {
+    Uri url = Uri.parse('${AppConstants.baseURL}/users/$id');
+    final token = await AppSession.getBearerToken();
+    try {
+      final response = await http.delete(
+        url,
+        headers: AppRequest.header(token),
       );
       final data = AppResponse.data(response);
       return Right(data);

@@ -65,10 +65,10 @@ class UserController extends Controller
             'email' => 'required',
         ]);
 
-        return response()->json([
-            'data' => $request->all(),
-            // 'token' => $token,
-        ], 201);
+        // return response()->json([
+        //     'data' => $request->all(),
+        //     // 'token' => $token,
+        // ], 201);
 
         $user = User::find(Auth::user()->id);
 
@@ -99,5 +99,83 @@ class UserController extends Controller
             'data' => $user,
             // 'token' => $token,
         ], 201);
+    }
+
+
+    function update($id, Request $request)
+    {
+        $this->validate($request, [
+            'username' => 'required|min:4',
+            'email' => 'required',
+        ]);
+
+        // return response()->json([
+        //     'data' => $request->all(),
+        //     // 'token' => $token,
+        // ], 201);
+
+        $user = User::findOrFail($id);
+
+        if ($request->password) {
+            $user->update([
+                'username' => $request->username,
+                'email' => $request->email,
+                'address' => $request->address,
+                'password' => Hash::make($request->password),
+                'role' => $request->role
+            ]);
+        } else {
+
+            $user->update($request->only('username', 'email', 'address', 'role'));
+        }
+
+        //  if (!Auth::attempt($request->only('email', 'password'))) {
+        //     return response()->json([
+        //         'message' => 'Unauthorized'
+        //     ], 401);
+        // }
+
+        // $user = User::where('email', $request->email)->firstOrFail();
+
+        // $token = $user->createToken('auth_token')->plainTextToken;
+
+
+        return response()->json([
+            'data' => $user,
+            // 'token' => $token,
+        ], 201);
+    }
+
+     function create(Request $request)
+    {
+        $this->validate($request, [
+            'username' => 'required|min:4|unique:users',
+            'email' => 'required|email|unique:users',
+            'password' => 'required|min:8',
+        ]);
+
+        $user = User::create([
+            'username' => $request->username,
+            'email' => $request->email,
+            'address' => $request->address,
+            'role' => $request->role,
+            'password' => Hash::make($request->password),
+        ]);
+
+        return response()->json([
+            'data' => $user,
+        ], 201);
+    }
+
+    function delete($id,)
+    {
+
+        $shop = User::findOrFail($id);
+        // File::delete('storage/shop/' . $shop->image);
+        $shop->delete();
+
+        return response()->json([
+            'massage' => 'success',
+        ], 200);
     }
 }

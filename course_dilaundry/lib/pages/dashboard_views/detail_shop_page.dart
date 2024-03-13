@@ -44,8 +44,8 @@ class _DetailShopPage extends ConsumerState<DetailShopPage> {
     );
     if (yes ?? false) {
       final link = WhatsAppUnilink(
-        //phoneNumber : number,
-        phoneNumber: '6289649878367',
+        phoneNumber: number,
+        // phoneNumber: '6289649878367',
         text: 'Hello, I want to order a laundry service',
       );
       if (await canLaunchUrl(link.asUri())) {
