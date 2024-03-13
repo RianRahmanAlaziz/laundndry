@@ -253,7 +253,7 @@ class _DetailLaundryPageState extends ConsumerState<DetailLaundryPage> {
                       horizontal: 60,
                       vertical: 30,
                     ),
-                    child: role != 'Admin'
+                    child: role == 'User'
                         ? Text(
                             widget.laundry.status,
                             style: const TextStyle(
@@ -278,7 +278,7 @@ class _DetailLaundryPageState extends ConsumerState<DetailLaundryPage> {
                                               contentPadding:
                                                   const EdgeInsets.fromLTRB(
                                                       16, 0, 16, 16),
-                                              title: const Text('Weight'),
+                                              title: const Text('Notification'),
                                               children: [
                                                 const Text(
                                                     "Laundry status successfully updated"),

@@ -29,7 +29,7 @@ class _MyLaundryViewState extends ConsumerState<MyLaundryView> {
   late UserModel user;
 
   getMyLaundry() {
-    if (user.role == 'Admin') {
+    if (user.role != 'User') {
       LaundryDatasource.readAll().then((value) {
         value.fold(
           (failure) {
