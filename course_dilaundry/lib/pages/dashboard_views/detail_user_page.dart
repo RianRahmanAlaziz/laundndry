@@ -29,7 +29,7 @@ class _DetailUserPage extends ConsumerState<DetailUserPage> {
   late String role = '';
 
   getUser() {
-    ShopDatasource.getAll().then((value) {
+    UserDatasource.getAll().then((value) {
       value.fold(
         (failure) {
           switch (failure.runtimeType) {
@@ -87,7 +87,7 @@ class _DetailUserPage extends ConsumerState<DetailUserPage> {
                 child: SimpleDialog(
                   titlePadding: const EdgeInsets.all(16),
                   contentPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                  title: const Text('Shop Update'),
+                  title: const Text('User Update'),
                   children: [
                     DInput(
                       controller: name,
