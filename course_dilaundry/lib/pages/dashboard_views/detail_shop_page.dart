@@ -138,7 +138,7 @@ class _DetailShopPage extends ConsumerState<DetailShopPage> {
                 ),
               ),
             )
-          else
+          else if (role == 'Admin')
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
