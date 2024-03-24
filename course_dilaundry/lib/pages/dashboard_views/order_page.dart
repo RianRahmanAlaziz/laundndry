@@ -11,8 +11,13 @@ import 'package:course_dilaundry/providers/my_laundry_provider.dart';
 import 'package:d_input/d_input.dart';
 import 'package:d_view/d_view.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pw;
+import 'package:printing/printing.dart';
 
 class Orderpage extends StatefulWidget {
   final ShopModel shop;
@@ -29,6 +34,393 @@ class _OrderpageState extends State<Orderpage> {
   final List<OrderItem> _orderItems = [];
   double _totalPrice = 0.0;
   int _totalWeight = 0;
+
+  void cetakPdf() async {
+    final doc = pw.Document();
+    // final image = await imageFromAssetBundle('assets/images/sobatcoding.png');
+    var now = DateTime.now();
+    var formatter = DateFormat('yyyy-MM-dd hh:mm:ss');
+    String formattedDate = formatter.format(now).toString();
+
+    doc.addPage(pw.Page(build: (pw.Context context) {
+      return pw.Column(children: [
+        pw.Text("Kingz Laundry"),
+        pw.Text("Solusi cepat kering dan wangi"),
+        pw.SizedBox(height: 15),
+        pw.Column(children: [
+          pw.Row(children: [
+            pw.SizedBox(
+                width: 80,
+                child: pw.Text("Nama Pelanggan",
+                    style: const pw.TextStyle(fontSize: 11))),
+            pw.SizedBox(
+                width: 5,
+                child: pw.Text(":", style: const pw.TextStyle(fontSize: 11))),
+            pw.SizedBox(
+                child: pw.Text(user.username,
+                    style: const pw.TextStyle(fontSize: 11))),
+          ]),
+          pw.Row(children: [
+            pw.SizedBox(
+                width: 80,
+                child:
+                    pw.Text("Alamat", style: const pw.TextStyle(fontSize: 11))),
+            pw.SizedBox(
+                width: 5,
+                child: pw.Text(":", style: const pw.TextStyle(fontSize: 11))),
+            pw.SizedBox(
+                child: pw.Text(user.address,
+                    style: const pw.TextStyle(fontSize: 11))),
+          ]),
+          pw.Row(children: [
+            pw.SizedBox(
+                width: 80,
+                child: pw.Text("Tgl", style: const pw.TextStyle(fontSize: 11))),
+            pw.SizedBox(
+                width: 5,
+                child: pw.Text(":", style: const pw.TextStyle(fontSize: 11))),
+            pw.SizedBox(
+                child: pw.Text(formattedDate,
+                    style: const pw.TextStyle(fontSize: 11))),
+          ]),
+        ]),
+        pw.SizedBox(height: 15),
+        pw.Column(children: [
+          pw.Row(children: [
+            pw.SizedBox(
+                width: 150,
+                child: pw.Text("Layanan",
+                    style: const pw.TextStyle(fontSize: 11))),
+            pw.SizedBox(
+                width: 50,
+                child:
+                    pw.Text("Weight", style: const pw.TextStyle(fontSize: 11))),
+            pw.SizedBox(
+                width: 100,
+                child: pw.Text("Price",
+                    textAlign: pw.TextAlign.right,
+                    style: const pw.TextStyle(fontSize: 11))),
+            pw.SizedBox(
+                width: 100,
+                child: pw.Text("Subtotal",
+                    textAlign: pw.TextAlign.right,
+                    style: const pw.TextStyle(fontSize: 11))),
+          ]),
+          pw.ListView.builder(
+            itemCount: _orderItems.length,
+            itemBuilder: (context, index) {
+              return pw.Row(children: [
+                pw.SizedBox(
+                    width: 150,
+                    child: pw.Text(_orderItems[index].itemName,
+                        style: const pw.TextStyle(fontSize: 11))),
+                pw.SizedBox(
+                    width: 50,
+                    child: pw.Text('${_orderItems[index].quantity}',
+                        style: const pw.TextStyle(fontSize: 11))),
+                pw.SizedBox(
+                    width: 100,
+                    child: pw.Text('Rp.${_orderItems[index].price}',
+                        textAlign: pw.TextAlign.right,
+                        style: const pw.TextStyle(fontSize: 11))),
+                pw.SizedBox(
+                    width: 100,
+                    child: pw.Text('Rp.${_orderItems[index].totalPrice}',
+                        textAlign: pw.TextAlign.right,
+                        style: const pw.TextStyle(fontSize: 11))),
+              ]);
+            },
+          ),
+          pw.SizedBox(height: 20),
+          pw.Row(children: [
+            pw.SizedBox(
+                width: 300,
+                child:
+                    pw.Text("Total", style: const pw.TextStyle(fontSize: 11))),
+            pw.SizedBox(
+                width: 100,
+                child: pw.Text('Rp.$_totalPrice',
+                    textAlign: pw.TextAlign.right,
+                    style: const pw.TextStyle(fontSize: 11))),
+          ])
+        ]),
+      ]); // Center
+    }));
+
+    await Printing.layoutPdf(
+        onLayout: (PdfPageFormat format) async => doc.save());
+  }
+
+  Future<void> generateInvoice() async {
+    final doc = pw.Document();
+    var now = DateTime.now();
+    var formatter = DateFormat('yyyy-MM-dd hh:mm:ss');
+    String formattedDate = formatter.format(now).toString();
+
+    doc.addPage(pw.Page(build: (pw.Context context) {
+      return pw.Column(children: [
+        pw.Text("Kingz Laundry"),
+        pw.Text("Solusi cepat kering dan wangi"),
+        pw.SizedBox(height: 15),
+        pw.Column(children: [
+          pw.Row(children: [
+            pw.SizedBox(
+                width: 80,
+                child: pw.Text("Nama Pelanggan",
+                    style: const pw.TextStyle(fontSize: 11))),
+            pw.SizedBox(
+                width: 5,
+                child: pw.Text(":", style: const pw.TextStyle(fontSize: 11))),
+            pw.SizedBox(
+                child: pw.Text(user.username,
+                    style: const pw.TextStyle(fontSize: 11))),
+          ]),
+          pw.Row(children: [
+            pw.SizedBox(
+                width: 80,
+                child:
+                    pw.Text("Alamat", style: const pw.TextStyle(fontSize: 11))),
+            pw.SizedBox(
+                width: 5,
+                child: pw.Text(":", style: const pw.TextStyle(fontSize: 11))),
+            pw.SizedBox(
+                child: pw.Text(user.address,
+                    style: const pw.TextStyle(fontSize: 11))),
+          ]),
+          pw.Row(children: [
+            pw.SizedBox(
+                width: 80,
+                child: pw.Text("Tgl", style: const pw.TextStyle(fontSize: 11))),
+            pw.SizedBox(
+                width: 5,
+                child: pw.Text(":", style: const pw.TextStyle(fontSize: 11))),
+            pw.SizedBox(
+                child: pw.Text(formattedDate,
+                    style: const pw.TextStyle(fontSize: 11))),
+          ]),
+        ]),
+        pw.SizedBox(height: 15),
+        pw.Column(children: [
+          pw.Row(children: [
+            pw.SizedBox(
+                width: 150,
+                child: pw.Text("Layanan",
+                    style: const pw.TextStyle(fontSize: 11))),
+            pw.SizedBox(
+                width: 50,
+                child:
+                    pw.Text("Weight", style: const pw.TextStyle(fontSize: 11))),
+            pw.SizedBox(
+                width: 100,
+                child: pw.Text("Price",
+                    textAlign: pw.TextAlign.right,
+                    style: const pw.TextStyle(fontSize: 11))),
+            pw.SizedBox(
+                width: 100,
+                child: pw.Text("Subtotal",
+                    textAlign: pw.TextAlign.right,
+                    style: const pw.TextStyle(fontSize: 11))),
+          ]),
+          pw.ListView.builder(
+            itemCount: _orderItems.length,
+            itemBuilder: (context, index) {
+              return pw.Row(children: [
+                pw.SizedBox(
+                    width: 150,
+                    child: pw.Text(_orderItems[index].itemName,
+                        style: const pw.TextStyle(fontSize: 11))),
+                pw.SizedBox(
+                    width: 50,
+                    child: pw.Text('${_orderItems[index].quantity}',
+                        style: const pw.TextStyle(fontSize: 11))),
+                pw.SizedBox(
+                    width: 100,
+                    child: pw.Text('Rp.${_orderItems[index].price}',
+                        textAlign: pw.TextAlign.right,
+                        style: const pw.TextStyle(fontSize: 11))),
+                pw.SizedBox(
+                    width: 100,
+                    child: pw.Text('Rp.${_orderItems[index].totalPrice}',
+                        textAlign: pw.TextAlign.right,
+                        style: const pw.TextStyle(fontSize: 11))),
+              ]);
+            },
+          ),
+          pw.SizedBox(height: 20),
+          pw.Row(children: [
+            pw.SizedBox(
+                width: 300,
+                child:
+                    pw.Text("Total", style: const pw.TextStyle(fontSize: 11))),
+            pw.SizedBox(
+                width: 100,
+                child: pw.Text('Rp.$_totalPrice',
+                    textAlign: pw.TextAlign.right,
+                    style: const pw.TextStyle(fontSize: 11))),
+          ])
+        ]),
+      ]); // Center
+    }));
+
+    await Printing.layoutPdf(
+        onLayout: (PdfPageFormat format) async => doc.save());
+  }
+
+  void displayPdf() {
+    final doc = pw.Document();
+
+    var now = DateTime.now();
+    var formatter = DateFormat('yyyy-MM-dd hh:mm:ss');
+    String formattedDate = formatter.format(now).toString();
+
+    doc.addPage(pw.Page(build: (pw.Context context) {
+      return pw.Column(children: [
+        pw.Text("Kingz Laundry"),
+        pw.Text("Solusi cepat kering dan wangi"),
+        pw.SizedBox(height: 15),
+        pw.Column(children: [
+          pw.Row(children: [
+            pw.SizedBox(
+                width: 80,
+                child: pw.Text("Nama Pelanggan",
+                    style: const pw.TextStyle(fontSize: 11))),
+            pw.SizedBox(
+                width: 5,
+                child: pw.Text(":", style: const pw.TextStyle(fontSize: 11))),
+            pw.SizedBox(
+                child: pw.Text(user.username,
+                    style: const pw.TextStyle(fontSize: 11))),
+          ]),
+          pw.Row(children: [
+            pw.SizedBox(
+                width: 80,
+                child:
+                    pw.Text("Alamat", style: const pw.TextStyle(fontSize: 11))),
+            pw.SizedBox(
+                width: 5,
+                child: pw.Text(":", style: const pw.TextStyle(fontSize: 11))),
+            pw.SizedBox(
+                child: pw.Text(user.address,
+                    style: const pw.TextStyle(fontSize: 11))),
+          ]),
+          pw.Row(children: [
+            pw.SizedBox(
+                width: 80,
+                child: pw.Text("Tgl", style: const pw.TextStyle(fontSize: 11))),
+            pw.SizedBox(
+                width: 5,
+                child: pw.Text(":", style: const pw.TextStyle(fontSize: 11))),
+            pw.SizedBox(
+                child: pw.Text(formattedDate,
+                    style: const pw.TextStyle(fontSize: 11))),
+          ]),
+        ]),
+        pw.SizedBox(height: 15),
+        pw.Column(children: [
+          pw.Row(children: [
+            pw.SizedBox(
+                width: 150,
+                child: pw.Text("Layanan",
+                    style: const pw.TextStyle(fontSize: 11))),
+            pw.SizedBox(
+                width: 50,
+                child:
+                    pw.Text("Weight", style: const pw.TextStyle(fontSize: 11))),
+            pw.SizedBox(
+                width: 100,
+                child: pw.Text("Price",
+                    textAlign: pw.TextAlign.right,
+                    style: const pw.TextStyle(fontSize: 11))),
+            pw.SizedBox(
+                width: 100,
+                child: pw.Text("Subtotal",
+                    textAlign: pw.TextAlign.right,
+                    style: const pw.TextStyle(fontSize: 11))),
+          ]),
+          pw.ListView.builder(
+            itemCount: _orderItems.length,
+            itemBuilder: (context, index) {
+              return pw.Row(children: [
+                pw.SizedBox(
+                    width: 150,
+                    child: pw.Text(_orderItems[index].itemName,
+                        style: const pw.TextStyle(fontSize: 11))),
+                pw.SizedBox(
+                    width: 50,
+                    child: pw.Text('${_orderItems[index].quantity}',
+                        style: const pw.TextStyle(fontSize: 11))),
+                pw.SizedBox(
+                    width: 100,
+                    child: pw.Text('Rp.${_orderItems[index].price}',
+                        textAlign: pw.TextAlign.right,
+                        style: const pw.TextStyle(fontSize: 11))),
+                pw.SizedBox(
+                    width: 100,
+                    child: pw.Text('Rp.${_orderItems[index].totalPrice}',
+                        textAlign: pw.TextAlign.right,
+                        style: const pw.TextStyle(fontSize: 11))),
+              ]);
+            },
+          ),
+          pw.SizedBox(height: 20),
+          pw.Row(children: [
+            pw.SizedBox(
+                width: 300,
+                child:
+                    pw.Text("Total", style: const pw.TextStyle(fontSize: 11))),
+            pw.SizedBox(
+                width: 100,
+                child: pw.Text('Rp.$_totalPrice',
+                    textAlign: pw.TextAlign.right,
+                    style: const pw.TextStyle(fontSize: 11))),
+          ])
+        ]),
+      ]); // Center
+    }));
+
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => PreviewScreen(doc: doc),
+        ));
+  }
+
+  void generatePdf() async {
+    const title = 'Test PDF';
+    await Printing.layoutPdf(onLayout: (format) => _generatePdf(format, title));
+  }
+
+  void printExistedPdf() async {
+    final pdf = await rootBundle.load('assets/files/test.pdf');
+    await Printing.layoutPdf(onLayout: (_) => pdf.buffer.asUint8List());
+  }
+
+  Future<Uint8List> _generatePdf(PdfPageFormat format, String title) async {
+    final pdf = pw.Document(version: PdfVersion.pdf_1_5, compress: true);
+    final font = await PdfGoogleFonts.nunitoExtraLight();
+
+    pdf.addPage(
+      pw.Page(
+        pageFormat: format,
+        build: (context) {
+          return pw.Column(
+            children: [
+              pw.SizedBox(
+                width: double.infinity,
+                child: pw.FittedBox(
+                  child: pw.Text(title, style: pw.TextStyle(font: font)),
+                ),
+              ),
+              pw.SizedBox(height: 20),
+              pw.Flexible(child: pw.FlutterLogo())
+            ],
+          );
+        },
+      ),
+    );
+
+    return pdf.save();
+  }
 
   @override
   void initState() {
@@ -108,7 +500,6 @@ class _OrderpageState extends State<Orderpage> {
                             value.fold(
                               (failure) {},
                               (result) {
-                                _resetOrder();
                                 _completeOrder();
                               },
                             )
@@ -228,58 +619,128 @@ class _OrderpageState extends State<Orderpage> {
   }
 
   void _completeOrder() {
-    showDialog(
+    showModalBottomSheet(
+      isDismissible: false,
+      isScrollControlled: true,
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Pesanan Selesai'),
-          content: const Text('Terima kasih atas pesanan Anda!'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return AlertDialog(
-                      title: const Text('WhatsApp'),
-                      content: const Text(
-                          'Apakah anda ingin menghubungi toko lewat WhatsApp?'),
-                      actions: [
-                        Consumer(builder: (_, wiRef, __) {
-                          return TextButton(
-                            onPressed: () {
-                              // int navIndex =
-                              //     wiRef.watch(dashboardNavIndexProvider);
-
-                              wiRef
-                                  .read(dashboardNavIndexProvider.notifier)
-                                  .state = 1;
-
-                              Nav.replace(context, const DashboardPage());
-                            },
-                            child: const Text('TIDAK'),
-                          );
-                        }),
-                        TextButton(
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                            launchUrl(Uri.parse(
-                                "https://wa.me/${widget.shop.whatsapp}"));
-                          },
-                          child: const Text('YA'),
-                        ),
-                      ],
-                    );
+        return Consumer(builder: (_, wiRef, __) {
+          return Container(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "Pesanan Selesai",
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black, // Warna teks Total
+                      ),
+                    )
+                  ],
+                ),
+                const SizedBox(height: 15),
+                LaundryOptionButton(
+                  onPressed: () {
+                    cetakPdf();
                   },
-                );
-              },
-              child: const Text('OK'),
+                  optionName: "Buat & Cetak PDF",
+                ),
+                const SizedBox(height: 15),
+                LaundryOptionButton(
+                  onPressed: () {
+                    generateInvoice();
+                  },
+                  optionName: "Cetak",
+                ),
+                const SizedBox(height: 15),
+                LaundryOptionButton(
+                  onPressed: () {
+                    displayPdf();
+                  },
+                  optionName: "Display PDF",
+                ),
+                const SizedBox(height: 15),
+                LaundryOptionButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    launchUrl(
+                        Uri.parse("https://wa.me/${widget.shop.whatsapp}"));
+                  },
+                  optionName: "Hubungi Toko",
+                ),
+                const SizedBox(height: 15),
+                LaundryOptionButton(
+                  onPressed: () {
+                    _resetOrder();
+                    wiRef.read(dashboardNavIndexProvider.notifier).state = 1;
+
+                    Nav.replace(context, const DashboardPage());
+                  },
+                  optionName: "Selesai",
+                ),
+              ],
             ),
-          ],
-        );
+          );
+        });
       },
     );
+    // showDialog(
+    //   context: context,
+    //   builder: (BuildContext context) {
+    //     return AlertDialog(
+    //       title: const Text('Pesanan Selesai'),
+    //       content: const Text('Terima kasih atas pesanan Anda!'),
+    //       actions: [
+    //         TextButton(
+    //           onPressed: () {
+    //             Navigator.of(context).pop();
+    //             showDialog(
+    //               context: context,
+    //               builder: (BuildContext context) {
+    //                 return AlertDialog(
+    //                   title: const Text('WhatsApp'),
+    //                   content: const Text(
+    //                       'Apakah anda ingin menghubungi toko lewat WhatsApp?'),
+    //                   actions: [
+    //                     Consumer(builder: (_, wiRef, __) {
+    //                       return TextButton(
+    //                         onPressed: () {
+    //                           // int navIndex =
+    //                           //     wiRef.watch(dashboardNavIndexProvider);
+
+    //                           wiRef
+    //                               .read(dashboardNavIndexProvider.notifier)
+    //                               .state = 1;
+
+    //                           Nav.replace(context, const DashboardPage());
+    //                         },
+    //                         child: const Text('TIDAK'),
+    //                       );
+    //                     }),
+    //                     TextButton(
+    //                       onPressed: () {
+    //                         Navigator.of(context).pop();
+    //                         launchUrl(Uri.parse(
+    //                             "https://wa.me/${widget.shop.whatsapp}"));
+    //                       },
+    //                       child: const Text('YA'),
+    //                     ),
+    //                   ],
+    //                 );
+    //               },
+    //             );
+    //           },
+    //           child: const Text('OK'),
+    //         ),
+    //       ],
+    //     );
+    //   },
+    // );
   }
 
   void _resetOrder() {
@@ -340,3 +801,33 @@ class OrderItem {
 //     home: Orderpage(wid),
 //   ));
 // }
+
+class PreviewScreen extends StatelessWidget {
+  final pw.Document doc;
+
+  const PreviewScreen({
+    Key? key,
+    required this.doc,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          onPressed: () => Navigator.pop(context),
+          icon: const Icon(Icons.arrow_back_outlined),
+        ),
+        centerTitle: true,
+        title: const Text("Preview"),
+      ),
+      body: PdfPreview(
+        build: (format) => doc.save(),
+        allowSharing: true,
+        allowPrinting: true,
+        initialPageFormat: PdfPageFormat.a4,
+        pdfFileName: "mydoc.pdf",
+      ),
+    );
+  }
+}
